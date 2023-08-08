@@ -1,0 +1,62 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Licencas {
+  id         Int       @id @default(autoincrement())
+  pessoasId  Int?
+  Users      Users[]
+  created_at DateTime? @default(now())
+  updated_at DateTime? @updatedAt
+
+  pessoas Pessoas? @relation(fields: [pessoasId], references: [id])
+}
+
+model Pessoas {
+  id         Int        @id @default(autoincrement())
+  nome_razao String     @unique
+  cpf_cnpj   String     @unique
+  email      String
+  ie         String?
+  phone      String?
+  zipcode    String?
+  address    String?
+  district   String?
+  city       String?
+  state      String?
+  number     String?
+  licencas   Licencas[]
+  created_at DateTime?  @default(now())
+  updated_at DateTime?  @updatedAt
+}
+
+model Users {
+  id         Int       @id @default(autoincrement())
+  name       String
+  email      String    @unique
+  password   String
+  avatar     String?
+  active     Boolean
+  scopes     Scopes[]
+  licencasId Int
+  created_at DateTime? @default(now())
+  updated_at DateTime? @updatedAt
+
+  licenca Licencas @relation(fields: [licencasId], references: [id])
+}
+
+model Scopes {
+  id         Int       @id @default(autoincrement())
+  scope      String    @unique
+  users      Users[]
+  created_at DateTime? @default(now())
+  updated_at DateTime? @updatedAt
+}
