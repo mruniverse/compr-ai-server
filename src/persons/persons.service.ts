@@ -1,0 +1,39 @@
+import { PrismaService } from './../prisma/prisma.service';
+import { ConflictException, Injectable } from '@nestjs/common';
+import { CreatePersonDto } from './dto/create-person.dto';
+import { UpdatePersonDto } from './dto/update-person.dto';
+
+@Injectable()
+export class PersonsService {
+  constructor(private prisma: PrismaService) {}
+
+  // return errror if person already exists
+  async create(createPersonDto: CreatePersonDto) {
+    const person = await this.prisma.persons.findFirst({
+      where: {
+        OR: [{ email: createPersonDto.email }, { cpf_cnpj: createPersonDto.cpf_cnpj }],
+      },
+    });
+
+    console.log(person);
+
+    if (person) throw new ConflictException('Person already exists');
+    return this.prisma.persons.create({ data: createPersonDto });
+  }
+
+  findAll() {
+    return this.prisma.persons.findMany();
+  }
+
+  findOne(id: number) {
+    return this.prisma.persons.findUnique({ where: { id } });
+  }
+
+  update(id: number, updatePersonDto: UpdatePersonDto) {
+    return `This action updates a #${id} person`;
+  }
+
+  remove(id: number) {
+    return `This action removes a #${id} person`;
+  }
+}

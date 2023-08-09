@@ -10,21 +10,22 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model Licencas {
-  id         Int       @id @default(autoincrement())
-  pessoasId  Int?
-  Users      Users[]
-  created_at DateTime? @default(now())
-  updated_at DateTime? @updatedAt
+model Licenses {
+  id             Int       @id @default(autoincrement())
+  max_users      Int
+  responsible_id Int       @unique
+  created_at     DateTime? @default(now())
+  updated_at     DateTime? @updatedAt
 
-  pessoas Pessoas? @relation(fields: [pessoasId], references: [id])
+  Users  Users[]
+  Person Persons @relation(fields: [responsible_id], references: [id])
 }
 
-model Pessoas {
-  id         Int        @id @default(autoincrement())
-  nome_razao String     @unique
-  cpf_cnpj   String     @unique
-  email      String
+model Persons {
+  id         Int       @id @default(autoincrement())
+  name       String
+  cpf_cnpj   String    @unique
+  email      String    @unique
   ie         String?
   phone      String?
   zipcode    String?
@@ -33,9 +34,10 @@ model Pessoas {
   city       String?
   state      String?
   number     String?
-  licencas   Licencas[]
-  created_at DateTime?  @default(now())
-  updated_at DateTime?  @updatedAt
+  created_at DateTime? @default(now())
+  updated_at DateTime? @updatedAt
+
+  Licenses Licenses[]
 }
 
 model Users {
@@ -43,20 +45,32 @@ model Users {
   name       String
   email      String    @unique
   password   String
+  active     Boolean   @default(true)
+  license_id Int
+  role_id    Int       @default(2)
   avatar     String?
-  active     Boolean
-  scopes     Scopes[]
-  licencasId Int
   created_at DateTime? @default(now())
   updated_at DateTime? @updatedAt
 
-  licenca Licencas @relation(fields: [licencasId], references: [id])
+  Permissions Permissions[]
+  License     Licenses      @relation(fields: [license_id], references: [id])
+  Role        Roles         @relation(fields: [role_id], references: [id])
 }
 
-model Scopes {
+model Permissions {
   id         Int       @id @default(autoincrement())
-  scope      String    @unique
-  users      Users[]
+  route      String    @unique
   created_at DateTime? @default(now())
   updated_at DateTime? @updatedAt
+
+  Users Users[]
+}
+
+model Roles {
+  id         Int       @id @default(autoincrement())
+  name       String    @unique
+  created_at DateTime? @default(now())
+  updated_at DateTime? @updatedAt
+
+  Users Users[]
 }

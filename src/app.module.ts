@@ -6,7 +6,10 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { PrismaService } from './prisma/prisma.service';
 import { PrismaModule } from './prisma/prisma.module';
-import { LicencasModule } from './licencas/licencas.module';
+import { LicensesModule } from './licenses/licenses.module';
+import { PersonsModule } from './persons/persons.module';
+import { PermissionsModule } from './permissions/permissions.module';
+import { RolesModule } from './roles/roles.module';
 
 @Module({
   imports: [
@@ -17,7 +20,10 @@ import { LicencasModule } from './licencas/licencas.module';
       envFilePath: ['.env'],
       isGlobal: true,
     }),
-    LicencasModule,
+    LicensesModule,
+    PersonsModule,
+    PermissionsModule,
+    RolesModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
