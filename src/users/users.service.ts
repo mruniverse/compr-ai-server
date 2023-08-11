@@ -51,6 +51,13 @@ export class UsersService {
     return newUser;
   }
 
+  async findOne(params: { id: number }): Promise<Users> {
+    const { id } = params;
+    return this.prisma.users.findUnique({
+      where: { id },
+    });
+  }
+
   async updateUser(params: { where: Prisma.UsersWhereUniqueInput; data: Prisma.UsersUpdateInput }): Promise<Users> {
     const { where, data } = params;
     return this.prisma.users.update({
