@@ -7,6 +7,7 @@ async function bootstrap() {
 
   app.enableCors({
     origin: 'http://dev.a3recovery.com.br',
+    allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept, Authorization',
     credentials: true,
   });
 
