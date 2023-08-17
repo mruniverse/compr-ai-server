@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Users } from '@prisma/client';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { PersonsService } from './persons.service';
 import { CreatePersonDto } from './dto/create-person.dto';
 import { UpdatePersonDto } from './dto/update-person.dto';
@@ -29,6 +40,12 @@ export class PersonsController {
 
   @Delete(':id')
   remove(@Param('id') id: string) {
+    const person = this.personsService.findOne(+id);
+    if (!person) throw new NotFoundException('Pessoa não encontrada');
+
+    const hasLicese = person.Licenses.length > 0;
+    if (hasLicese) throw new ConflictException('Existem licenças vinculadas a esta pessoa');
+
     return this.personsService.remove(+id);
   }
 }

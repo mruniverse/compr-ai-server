@@ -30,10 +30,10 @@ export class PersonsService {
   }
 
   update(id: number, updatePersonDto: UpdatePersonDto) {
-    return `This action updates a #${id} person`;
+    return this.prisma.persons.update({ where: { id }, data: updatePersonDto });
   }
 
   remove(id: number) {
-    return `This action removes a #${id} person`;
+    return this.prisma.persons.delete({ where: { id } });
   }
 }

@@ -16,12 +16,34 @@ export class LicensesService {
     return this.prisma.licenses.create({ data: createLicenseDto });
   }
 
-  findAll() {
-    return this.prisma.licenses.findMany();
+  findAll(): Promise<Licenses[]> {
+    return this.prisma.licenses.findMany({
+      include: {
+        Person: {
+          select: {
+            name: true,
+          },
+        },
+        Users: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
   }
 
   async findOne(licensesWhereUniqueInput: Prisma.LicensesWhereUniqueInput): Promise<Licenses | null> {
-    return this.prisma.licenses.findUnique({ where: licensesWhereUniqueInput });
+    return this.prisma.licenses.findUnique({
+      where: licensesWhereUniqueInput,
+      include: {
+        Users: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
   }
 
   update(id: number, updateLicenseDto: UpdateLicenseDto) {
