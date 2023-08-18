@@ -1,4 +1,3 @@
-import { Users } from '@prisma/client';
 import {
   Controller,
   Get,
@@ -9,6 +8,7 @@ import {
   Delete,
   ConflictException,
   NotFoundException,
+  BadRequestException,
 } from '@nestjs/common';
 import { PersonsService } from './persons.service';
 import { CreatePersonDto } from './dto/create-person.dto';
@@ -17,6 +17,12 @@ import { UpdatePersonDto } from './dto/update-person.dto';
 @Controller('persons')
 export class PersonsController {
   constructor(private readonly personsService: PersonsService) {}
+
+  @Get('search/:search')
+  search(@Param('search') search: string) {
+    if (!search) throw new NotFoundException('Nenhum resultado encontrado');
+    return this.personsService.search(search);
+  }
 
   @Post()
   create(@Body() createPersonDto: CreatePersonDto) {
@@ -30,6 +36,7 @@ export class PersonsController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
+    if (!id || !+id) throw new BadRequestException('O id informado não é válido');
     return this.personsService.findOne(+id);
   }
 

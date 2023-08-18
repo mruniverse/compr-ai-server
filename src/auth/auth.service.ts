@@ -11,12 +11,12 @@ export class AuthService {
   async signIn({ email, password }: SignInDto): Promise<any> {
     const user = await this.users.user({ email });
     if (!user) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Usuário ou senha inválidos');
     }
 
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Usuário ou senha inválidos');
     }
 
     const payload = { id: user.id, email: user.email };

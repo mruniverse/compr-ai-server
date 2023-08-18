@@ -26,8 +26,8 @@ export class UsersController {
     const existingUser = await this.users.findByEmail(user.email);
     if (existingUser) throw new ConflictException('Usuário já cadastrado');
 
-    // const maxUsers = (await license.Users).length > license.max_users;
-    // if (maxUsers) throw new ConflictException('Limite de usuários excedido');
+    const maxUsers = (await license.Users).length > license.max_users;
+    if (maxUsers) throw new ConflictException('Limite de usuários excedido');
 
     return await this.users.create(user);
   }

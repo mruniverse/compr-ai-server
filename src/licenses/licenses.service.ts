@@ -11,7 +11,14 @@ export class LicensesService {
 
   async create(createLicenseDto: CreateLicenseDto): Promise<Licenses> {
     const responsible = await this.persons.findOne(createLicenseDto.responsible_id);
-    if (!responsible) throw new NotFoundException('Responsible not found');
+    if (!responsible) throw new NotFoundException('Responsável não encontrado');
+
+    const hasLicense = await this.prisma.licenses.findFirst({
+      where: {
+        responsible_id: createLicenseDto.responsible_id,
+      },
+    });
+    if (hasLicense) throw new NotFoundException('O responsável já possui uma licença');
 
     return this.prisma.licenses.create({ data: createLicenseDto });
   }
@@ -33,7 +40,7 @@ export class LicensesService {
     });
   }
 
-  async findOne(licensesWhereUniqueInput: Prisma.LicensesWhereUniqueInput): Promise<Licenses | null> {
+  async findOne(licensesWhereUniqueInput: Prisma.LicensesWhereUniqueInput) {
     return this.prisma.licenses.findUnique({
       where: licensesWhereUniqueInput,
       include: {
@@ -47,8 +54,7 @@ export class LicensesService {
   }
 
   update(id: number, updateLicenseDto: UpdateLicenseDto) {
-    console.log(updateLicenseDto);
-    return `This action updates a #${id} license`;
+    return this.prisma.licenses.update({ where: { id }, data: updateLicenseDto });
   }
 
   remove(id: number) {

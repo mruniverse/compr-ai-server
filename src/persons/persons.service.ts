@@ -7,6 +7,18 @@ import { UpdatePersonDto } from './dto/update-person.dto';
 export class PersonsService {
   constructor(private prisma: PrismaService) {}
 
+  async search(search: string) {
+    return await this.prisma.persons.findMany({
+      orderBy: {
+        _relevance: {
+          fields: ['name', 'email', 'cpf_cnpj'],
+          search: search,
+          sort: 'desc',
+        },
+      },
+    });
+  }
+
   // return errror if person already exists
   async create(createPersonDto: CreatePersonDto) {
     const person = await this.prisma.persons.findFirst({
