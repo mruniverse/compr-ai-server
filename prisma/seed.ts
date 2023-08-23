@@ -16,7 +16,7 @@ async function main() {
       { name: 'Gestão de bens', route: '/assets' },
       { name: 'Usuários', route: '/auth/users' },
       { name: 'Licenças', route: '/auth/licenses' },
-      { name: 'Permissões', route: '/auth/permissions' },
+      { name: 'Permissões', route: '/auth/roles' },
     ],
   });
   console.log('New permissions created: ', permissions);
