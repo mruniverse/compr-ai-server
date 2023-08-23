@@ -29,6 +29,7 @@ export class LicensesService {
         Person: {
           select: {
             name: true,
+            cpf_cnpj: true,
           },
         },
         Users: {

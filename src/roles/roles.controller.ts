@@ -9,14 +9,16 @@ export class RolesController {
 
   @Post()
   create(@Body() createRoleDto: CreateRoleDto) {
+    if (createRoleDto.permissions) {
+      return this.rolesService.createWithPermissions(createRoleDto);
+    }
     return this.rolesService.create(createRoleDto);
   }
 
   @Get()
-  findAll(@Query() include: string) {
-    console.log(include);
-    if (include === 'permissions') {
-      // return this.rolesService.findAllWithPermissions();
+  findAll(@Query('include') include: Array<string>) {
+    if (include?.includes('permissions')) {
+      return this.rolesService.findAllWithPermissions();
     }
 
     return this.rolesService.findAll();
@@ -29,6 +31,9 @@ export class RolesController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateRoleDto: UpdateRoleDto) {
+    if (updateRoleDto.permissions) {
+      return this.rolesService.updateWithPermissions(+id, updateRoleDto);
+    }
     return this.rolesService.update(+id, updateRoleDto);
   }
 

@@ -27,14 +27,42 @@ export class PersonsService {
       },
     });
 
-    console.log(person);
-
     if (person) throw new ConflictException('Person already exists');
-    return this.prisma.persons.create({ data: createPersonDto });
+    return this.prisma.persons.create({
+      data: {
+        name: createPersonDto.name,
+        cpf_cnpj: createPersonDto.cpf_cnpj,
+        email: createPersonDto.email,
+        address: createPersonDto.address,
+        city: createPersonDto.city,
+        number: createPersonDto.number,
+        ie: createPersonDto.ie,
+        state: createPersonDto.state,
+        phone: createPersonDto.phone,
+      },
+    });
   }
 
   findAll() {
     return this.prisma.persons.findMany();
+  }
+
+  findOneWithLicense(id: number) {
+    return this.prisma.persons.findUnique({
+      where: { id },
+      include: {
+        Licenses: {
+          select: {
+            id: true,
+            Users: {
+              select: {
+                id: true,
+              },
+            },
+          },
+        },
+      },
+    });
   }
 
   findOne(id: number) {

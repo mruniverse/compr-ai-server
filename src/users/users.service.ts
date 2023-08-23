@@ -19,45 +19,63 @@ export class UsersService {
     return user;
   }
 
-  async user(UsersWhereUniqueInput: Prisma.UsersWhereUniqueInput): Promise<Users | any> {
-    return this.prisma.users.findUnique({
+  async userWithPermissions(UsersWhereUniqueInput: Prisma.UsersWhereUniqueInput): Promise<Users | any> {
+    const user = await this.prisma.users.findUnique({
       where: UsersWhereUniqueInput,
-      select: {
-        id: true,
-        name: true,
-        password: false,
-        email: true,
-        license_id: true,
-        active: true,
-        avatar: true,
-        role_id: true,
-      },
-    });
-  }
-
-  findAll(): Promise<GetUsersDto[]> {
-    return this.prisma.users.findMany({
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        license_id: true,
-        License: {
+      include: {
+        Role: {
           select: {
-            id: true,
-            Person: {
+            name: true,
+            Permissions: {
               select: {
                 id: true,
                 name: true,
+                route: true,
               },
             },
           },
         },
-        active: true,
-        avatar: true,
-        role_id: true,
       },
     });
+
+    return this.usersExceptAttribute([user], ['password'])[0];
+  }
+
+  async user(UsersWhereUniqueInput: Prisma.UsersWhereUniqueInput): Promise<Users | any> {
+    const user = await this.prisma.users.findUnique({
+      where: UsersWhereUniqueInput,
+    });
+
+    return this.usersExceptAttribute([user], ['password'])[0];
+  }
+
+  async findAllWithPerson() {
+    const users = await this.prisma.users.findMany({
+      include: {
+        License: {
+          select: {
+            id: true,
+            Person: true,
+          },
+        },
+      },
+    });
+
+    return this.usersExceptAttribute(users, ['password']);
+  }
+
+  private usersExceptAttribute(users: Users[], keys: string[]) {
+    return users.map((user) => {
+      keys.forEach((key) => {
+        delete user[key];
+      });
+      return user;
+    });
+  }
+
+  async findAll(): Promise<GetUsersDto[]> {
+    const users = await this.prisma.users.findMany();
+    return this.usersExceptAttribute(users, ['password']);
   }
 
   async create(user: CreateUserDto): Promise<Users> {
@@ -66,7 +84,7 @@ export class UsersService {
     let newUser: Users;
     newUser = await this.prisma.users.create({
       data: {
-        ...newUser,
+        ...user,
         password: hash,
       },
     });

@@ -1,6 +1,6 @@
 import { SignInDto } from './dto/signin.dto';
 import { AuthService } from './auth.service';
-import { Controller, Post, Body, Get, Headers, HttpException } from '@nestjs/common';
+import { Controller, Post, Body, Get, Headers, Query } from '@nestjs/common';
 
 @Controller('auth')
 export class AuthController {
@@ -15,8 +15,9 @@ export class AuthController {
   }
 
   @Get('me')
-  async getMe(@Headers('Authorization') access_token: string): Promise<any> {
+  async getMe(@Headers('Authorization') access_token: string, @Query('include') include: string[]): Promise<any> {
     access_token = access_token.slice(7);
-    return await this.authService.getMe(access_token);
+
+    return await this.authService.getMe(access_token, include);
   }
 }

@@ -1,4 +1,6 @@
 import { PrismaClient } from '@prisma/client';
+import * as bcrypt from 'bcrypt';
+import { connect } from 'http2';
 
 const prisma = new PrismaClient();
 
@@ -34,7 +36,7 @@ async function main() {
       },
     },
   });
-  console.log('Permissions added to administrator role: ', adminRole);
+  console.log('Permissions added to administrator role: ', adminRole.id);
 
   // Attribute all permissions to the user role
   const userRole = await prisma.roles.update({
@@ -45,8 +47,52 @@ async function main() {
       },
     },
   });
-  console.log('Permissions added to user role: ', userRole);
+  console.log('Permissions added to user role: ', userRole.id);
+
+  // Create a person
+  const person = await prisma.persons.create({
+    data: {
+      name: 'Pessoa de teste',
+      cpf_cnpj: '000.000.000-00',
+      email: 'admin@rocksky.com',
+      phone: '(00) 00000-0000',
+      address: 'Rua de teste, 00',
+      city: 'Cidade de teste',
+      state: 'Estado de teste',
+      zipcode: '00000-000',
+    },
+  });
+  console.log('New person created: ', person.id);
+
+  // Create a license
+  const license = await prisma.licenses.create({
+    data: {
+      max_users: 10,
+      Person: { connect: { id: 1 } },
+    },
+  });
+  console.log('New license created: ', license.id);
+
+  // Create a user with the administrator role
+  const hash = await bcrypt.hash('temporarypassword', 10);
+  const user = await prisma.users.create({
+    data: {
+      name: 'Administrador',
+      email: 'admin@rocksky.com',
+      password: hash,
+      active: true,
+      avatar: 'https://i.imgur.com/1OeQZ4f.png',
+      License: {
+        connect: { id: 1 },
+      },
+      Role: {
+        connect: { id: 1 },
+      },
+    },
+  });
+  console.log('New user created: ', user);
 }
+
 main()
   .then(async () => {
     await prisma.$disconnect();

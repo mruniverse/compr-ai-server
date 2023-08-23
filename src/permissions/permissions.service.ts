@@ -23,7 +23,10 @@ export class PermissionsService {
   }
 
   update(id: number, updatePermissionDto: UpdatePermissionDto) {
-    return `This action updates a #${id} permission`;
+    return this.prisma.permissions.update({
+      where: { id },
+      data: updatePermissionDto,
+    });
   }
 
   remove(id: number) {

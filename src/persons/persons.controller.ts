@@ -9,6 +9,7 @@ import {
   ConflictException,
   NotFoundException,
   BadRequestException,
+  Query,
 } from '@nestjs/common';
 import { PersonsService } from './persons.service';
 import { CreatePersonDto } from './dto/create-person.dto';
@@ -32,6 +33,13 @@ export class PersonsController {
   @Get()
   findAll() {
     return this.personsService.findAll();
+  }
+
+  @Get(':id')
+  findOneWithLicense(@Param('id') id: string, @Query('include') include: Array<string>) {
+    if (!id || !+id) throw new BadRequestException('O id informado não é válido');
+    if (include?.includes('licenses')) return this.personsService.findOneWithLicense(+id);
+    return this.personsService.findOne(+id);
   }
 
   @Get(':id')

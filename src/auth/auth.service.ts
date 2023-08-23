@@ -23,9 +23,14 @@ export class AuthService {
     return { access_token: await this.jwtService.signAsync(payload), expires_in: 86400 };
   }
 
-  async getMe(access_token: string): Promise<any> {
+  async getMe(access_token: string, include: string[]): Promise<any> {
     try {
       const payload: any = await this.jwtService.verifyAsync(access_token);
+
+      if (include?.includes('permissions')) {
+        return await this.users.userWithPermissions({ id: payload.id });
+      }
+
       return await this.users.user({ id: payload.id });
     } catch (error) {
       throw new UnauthorizedException();

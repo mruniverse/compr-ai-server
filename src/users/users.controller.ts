@@ -12,6 +12,7 @@ import {
   Param,
   Patch,
   Delete,
+  Query,
 } from '@nestjs/common';
 
 @Controller('users')
@@ -26,14 +27,17 @@ export class UsersController {
     const existingUser = await this.users.findByEmail(user.email);
     if (existingUser) throw new ConflictException('Usuário já cadastrado');
 
-    const maxUsers = (await license.Users).length > license.max_users;
+    const maxUsers = license.Users?.length >= license.max_users;
     if (maxUsers) throw new ConflictException('Limite de usuários excedido');
 
     return await this.users.create(user);
   }
 
   @Get()
-  findAll() {
+  findAll(@Query('include') include: Array<string>) {
+    if (include?.includes('person')) {
+      return this.users.findAllWithPerson();
+    }
     return this.users.findAll();
   }
 

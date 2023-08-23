@@ -7,9 +7,30 @@ import { UpdateRoleDto } from './dto/update-role.dto';
 export class RolesService {
   constructor(private readonly prisma: PrismaService) {}
 
+  createWithPermissions(createRoleDto: CreateRoleDto) {
+    return this.prisma.roles.create({
+      data: {
+        name: createRoleDto.name,
+        Permissions: {
+          connect: createRoleDto.permissions.map((permission) => ({
+            id: permission,
+          })),
+        },
+      },
+    });
+  }
+
   create(createRoleDto: CreateRoleDto) {
     return this.prisma.roles.create({
       data: createRoleDto,
+    });
+  }
+
+  findAllWithPermissions() {
+    return this.prisma.roles.findMany({
+      include: {
+        Permissions: true,
+      },
     });
   }
 
@@ -19,6 +40,20 @@ export class RolesService {
 
   findOne(id: number) {
     return `This action returns a #${id} role`;
+  }
+
+  updateWithPermissions(id: number, updateRoleDto: UpdateRoleDto) {
+    return this.prisma.roles.update({
+      where: { id },
+      data: {
+        name: updateRoleDto.name,
+        Permissions: {
+          set: updateRoleDto.permissions.map((permission) => ({
+            id: permission,
+          })),
+        },
+      },
+    });
   }
 
   update(id: number, updateRoleDto: UpdateRoleDto) {
