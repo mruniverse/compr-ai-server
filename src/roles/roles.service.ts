@@ -8,7 +8,9 @@ export class RolesService {
   constructor(private readonly prisma: PrismaService) {}
 
   create(createRoleDto: CreateRoleDto) {
-    return 'This action adds a new role';
+    return this.prisma.roles.create({
+      data: createRoleDto,
+    });
   }
 
   findAll() {
@@ -20,7 +22,10 @@ export class RolesService {
   }
 
   update(id: number, updateRoleDto: UpdateRoleDto) {
-    return `This action updates a #${id} role`;
+    return this.prisma.roles.update({
+      where: { id },
+      data: updateRoleDto,
+    });
   }
 
   remove(id: number) {

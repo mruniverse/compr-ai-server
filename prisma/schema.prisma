@@ -52,18 +52,18 @@ model Users {
   created_at DateTime? @default(now())
   updated_at DateTime? @updatedAt
 
-  Permissions Permissions[]
-  License     Licenses      @relation(fields: [license_id], references: [id])
-  Role        Roles         @relation(fields: [role_id], references: [id])
+  License Licenses @relation(fields: [license_id], references: [id])
+  Role    Roles    @relation(fields: [role_id], references: [id])
 }
 
 model Permissions {
   id         Int       @id @default(autoincrement())
+  name       String
   route      String    @unique
   created_at DateTime? @default(now())
   updated_at DateTime? @updatedAt
 
-  Users Users[]
+  Roles Roles[]
 }
 
 model Roles {
@@ -72,5 +72,6 @@ model Roles {
   created_at DateTime? @default(now())
   updated_at DateTime? @updatedAt
 
-  Users Users[]
+  Users       Users[]
+  Permissions Permissions[]
 }

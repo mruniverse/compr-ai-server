@@ -11,9 +11,27 @@ import { PermissionsService } from 'src/permissions/permissions.service';
 export class UsersService {
   constructor(private prisma: PrismaService, private permissions: PermissionsService) {}
 
-  async user(UsersWhereUniqueInput: Prisma.UsersWhereUniqueInput): Promise<Users | null> {
+  async privateUser(email: string) {
+    const user = await this.prisma.users.findUnique({
+      where: { email },
+    });
+
+    return user;
+  }
+
+  async user(UsersWhereUniqueInput: Prisma.UsersWhereUniqueInput): Promise<Users | any> {
     return this.prisma.users.findUnique({
       where: UsersWhereUniqueInput,
+      select: {
+        id: true,
+        name: true,
+        password: false,
+        email: true,
+        license_id: true,
+        active: true,
+        avatar: true,
+        role_id: true,
+      },
     });
   }
 
@@ -35,12 +53,6 @@ export class UsersService {
             },
           },
         },
-        Permissions: {
-          select: {
-            id: true,
-            route: true,
-          },
-        },
         active: true,
         avatar: true,
         role_id: true,
@@ -50,17 +62,12 @@ export class UsersService {
 
   async create(user: CreateUserDto): Promise<Users> {
     const hash = await bcrypt.hash(user.password, 10);
-    const permissions = await this.permissions.findBasicPermissions();
-
-    const userWithoutPermissions = { ...user };
-    delete userWithoutPermissions.permissions_id;
 
     let newUser: Users;
     newUser = await this.prisma.users.create({
       data: {
-        ...userWithoutPermissions,
+        ...newUser,
         password: hash,
-        Permissions: { connect: permissions.map((p) => ({ id: p.id })) },
       },
     });
 
@@ -68,15 +75,6 @@ export class UsersService {
       newUser = await this.updateUser({
         where: { id: newUser.id },
         data: { Role: { connect: { id: user.role_id } } },
-      });
-    }
-
-    if (user.permissions_id) {
-      newUser = await this.updateUser({
-        where: { id: newUser.id },
-        data: {
-          Permissions: { set: user.permissions_id.map((id) => ({ id })) },
-        },
       });
     }
 

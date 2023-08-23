@@ -48,17 +48,6 @@ export class UsersController {
       delete user.role_id;
     }
 
-    if (user.permissions_id) {
-      await this.users.updateUser({
-        where: { id: +id },
-        data: {
-          Permissions: { set: user.permissions_id.map((id) => ({ id })) },
-        },
-      });
-
-      delete user.permissions_id;
-    }
-
     return this.users.update(+id, user);
   }
 

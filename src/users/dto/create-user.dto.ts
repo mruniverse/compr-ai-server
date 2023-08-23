@@ -1,4 +1,4 @@
-import { IsArray, IsEmail, IsNotEmpty, IsOptional } from 'class-validator';
+import { IsEmail, IsNotEmpty } from 'class-validator';
 
 export class CreateUserDto {
   @IsNotEmpty()
@@ -13,10 +13,6 @@ export class CreateUserDto {
 
   @IsNotEmpty()
   license_id: number;
-
-  @IsOptional()
-  @IsArray()
-  permissions_id: number[];
 
   active: boolean;
   avatar: string;

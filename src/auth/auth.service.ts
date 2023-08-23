@@ -9,7 +9,7 @@ export class AuthService {
   constructor(private users: UsersService, private jwtService: JwtService) {}
 
   async signIn({ email, password }: SignInDto): Promise<any> {
-    const user = await this.users.user({ email });
+    const user = await this.users.privateUser(email);
     if (!user) {
       throw new UnauthorizedException('Usuário ou senha inválidos');
     }

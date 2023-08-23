@@ -9,16 +9,8 @@ export class PermissionsService {
   constructor(private prisma: PrismaService) {}
 
   create(createPermissionDto: CreatePermissionDto) {
-    return 'This action adds a new permission';
-  }
-
-  findBasicPermissions() {
-    return this.prisma.permissions.findMany({
-      where: {
-        route: {
-          not: { contains: 'manage' },
-        },
-      },
+    return this.prisma.permissions.create({
+      data: createPermissionDto,
     });
   }
 
