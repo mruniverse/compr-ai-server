@@ -36,15 +36,9 @@ export class PersonsController {
   }
 
   @Get(':id')
-  findOneWithLicense(@Param('id') id: string, @Query('include') include: Array<string>) {
+  findOne(@Param('id') id: string, @Query('include') include: Array<string>) {
     if (!id || !+id) throw new BadRequestException('O id informado não é válido');
-    if (include?.includes('licenses')) return this.personsService.findOneWithLicense(+id);
-    return this.personsService.findOne(+id);
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    if (!id || !+id) throw new BadRequestException('O id informado não é válido');
+    if (include?.includes('license')) return this.personsService.findOneWithLicense(+id);
     return this.personsService.findOne(+id);
   }
 
@@ -58,7 +52,7 @@ export class PersonsController {
     const person = this.personsService.findOne(+id);
     if (!person) throw new NotFoundException('Pessoa não encontrada');
 
-    const hasLicese = person.Licenses.length > 0;
+    const hasLicese = person.License;
     if (hasLicese) throw new ConflictException('Existem licenças vinculadas a esta pessoa');
 
     return this.personsService.remove(+id);
