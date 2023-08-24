@@ -3,7 +3,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from './../prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
-import { Prisma, Users } from '@prisma/client';
+import { Prisma, Users, Licenses } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { PermissionsService } from 'src/permissions/permissions.service';
 
@@ -19,7 +19,74 @@ export class UsersService {
     return user;
   }
 
-  async userWithPermissions(UsersWhereUniqueInput: Prisma.UsersWhereUniqueInput): Promise<Users | any> {
+  async findWhereAllowed(loggedUser: Users): Promise<Prisma.UsersWhereInput> {
+    if (!loggedUser.role_id || !loggedUser.license_id) throw new Error('Usuário sem credenciais');
+
+    let where: Prisma.UsersWhereInput = {};
+    if (loggedUser.role_id >= 2) {
+      where = {
+        role_id: {
+          gte: 2,
+        },
+        License: {
+          id: loggedUser.license_id,
+        },
+      };
+    }
+
+    return where;
+  }
+
+  findIfCreateOrUpdateAllowed(newUser: CreateUserDto, loggedUser: Users): boolean {
+    if (loggedUser.role_id === 1) return true;
+
+    const allowLicense = loggedUser.license_id ? loggedUser.license_id === newUser.license_id : true;
+    const allowRole = loggedUser.role_id ? loggedUser.role_id <= newUser.role_id : true;
+    const allowPassword = newUser.password ? allowRole : true;
+
+    return allowLicense && allowRole && allowPassword;
+  }
+
+  async findIfDeleteAllowed(userId: number, loggedUser: Users): Promise<boolean> {
+    if (loggedUser.role_id === 1) return true;
+    const { license_id, role_id } = await this.findUnique({ id: userId });
+    const allowLicense = loggedUser.license_id ? loggedUser.license_id === license_id : true;
+    const allowRole = loggedUser.role_id ? loggedUser.role_id <= role_id : true;
+
+    return allowLicense && allowRole;
+  }
+
+  private usersExceptAttribute(users: Users[], keys: string[]) {
+    return users.map((user) => {
+      keys.forEach((key) => {
+        delete user[key];
+      });
+      return user;
+    });
+  }
+
+  async findAllWithPerson(where: Prisma.UsersWhereInput) {
+    const users = await this.prisma.users.findMany({
+      where,
+      include: {
+        License: {
+          select: {
+            id: true,
+            Person: true,
+          },
+        },
+      },
+    });
+
+    return this.usersExceptAttribute(users, ['password']);
+  }
+
+  async findAll(where: Prisma.UsersWhereInput): Promise<GetUsersDto[]> {
+    const users = await this.prisma.users.findMany({ where });
+    return this.usersExceptAttribute(users, ['password']);
+  }
+
+  async findUniqueWithPermissions(UsersWhereUniqueInput: Prisma.UsersWhereUniqueInput): Promise<Users | any> {
     const user = await this.prisma.users.findUnique({
       where: UsersWhereUniqueInput,
       include: {
@@ -41,7 +108,7 @@ export class UsersService {
     return this.usersExceptAttribute([user], ['password'])[0];
   }
 
-  async user(UsersWhereUniqueInput: Prisma.UsersWhereUniqueInput): Promise<Users | any> {
+  async findUnique(UsersWhereUniqueInput: Prisma.UsersWhereUniqueInput): Promise<Users | any> {
     const user = await this.prisma.users.findUnique({
       where: UsersWhereUniqueInput,
     });
@@ -49,33 +116,10 @@ export class UsersService {
     return this.usersExceptAttribute([user], ['password'])[0];
   }
 
-  async findAllWithPerson() {
-    const users = await this.prisma.users.findMany({
-      include: {
-        License: {
-          select: {
-            id: true,
-            Person: true,
-          },
-        },
-      },
+  async findUniqueByEmail(email: string): Promise<Users> {
+    return this.prisma.users.findUnique({
+      where: { email },
     });
-
-    return this.usersExceptAttribute(users, ['password']);
-  }
-
-  private usersExceptAttribute(users: Users[], keys: string[]) {
-    return users.map((user) => {
-      keys.forEach((key) => {
-        delete user[key];
-      });
-      return user;
-    });
-  }
-
-  async findAll(): Promise<GetUsersDto[]> {
-    const users = await this.prisma.users.findMany();
-    return this.usersExceptAttribute(users, ['password']);
   }
 
   async create(user: CreateUserDto): Promise<Users> {
@@ -90,7 +134,7 @@ export class UsersService {
     });
 
     if (user.role_id) {
-      newUser = await this.updateUser({
+      newUser = await this.prisma.users.update({
         where: { id: newUser.id },
         data: { Role: { connect: { id: user.role_id } } },
       });
@@ -99,36 +143,18 @@ export class UsersService {
     return newUser;
   }
 
-  async findByEmail(email: string): Promise<Users> {
-    return this.prisma.users.findUnique({
-      where: { email },
-    });
-  }
-
-  async findOne(params: { id: number }): Promise<Users> {
-    const { id } = params;
-    return this.prisma.users.findUnique({
-      where: { id },
-    });
-  }
-
   async update(id: number, user: UpdateUserDto): Promise<Users> {
-    const hash = await bcrypt.hash(user.password, 10);
+    let password: string;
+    if (user.password) {
+      password = await bcrypt.hash(user.password, 10);
+    }
+
     return this.prisma.users.update({
+      where: { id },
       data: {
         ...user,
-        password: hash,
+        password,
       },
-      where: { id },
-    });
-  }
-
-  async updateUser(params: { where: Prisma.UsersWhereUniqueInput; data: Prisma.UsersUpdateInput }): Promise<Users> {
-    const { where, data } = params;
-
-    return this.prisma.users.update({
-      data,
-      where,
     });
   }
 

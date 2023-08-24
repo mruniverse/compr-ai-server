@@ -1,19 +1,15 @@
-import { IsEmail, IsNotEmpty } from 'class-validator';
+import { IsEmail, IsOptional } from 'class-validator';
 
 export class CreateUserDto {
-  @IsNotEmpty()
+  @IsOptional()
   name: string;
 
   @IsEmail()
-  @IsNotEmpty()
+  @IsOptional()
   email: string;
 
-  @IsNotEmpty()
   password: string;
-
-  @IsNotEmpty()
   license_id: number;
-
   active: boolean;
   avatar: string;
   role_id: number;

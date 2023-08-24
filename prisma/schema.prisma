@@ -34,8 +34,7 @@ model Persons {
   number     String?
   created_at DateTime? @default(now())
   updated_at DateTime? @updatedAt
-
-  Licenses Licenses[]
+  License   Licenses?
 
   @@fulltext([name, cpf_cnpj, email])
 }
