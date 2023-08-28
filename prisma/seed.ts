@@ -1,6 +1,5 @@
 import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
-import { connect } from 'http2';
 
 const prisma = new PrismaClient();
 
@@ -49,20 +48,37 @@ async function main() {
   });
   console.log('Permissions added to user role: ', userRole.id);
 
+  // Create new ramo
+  const ramo = await prisma.ramos.create({
+    data: {
+      name: 'Ramo de teste',
+    },
+  });
+
   // Create a person
   const person = await prisma.persons.create({
     data: {
       name: 'Pessoa de teste',
       cpf_cnpj: '000.000.000-00',
       email: 'admin@rocksky.com',
-      phone: '(00) 00000-0000',
-      address: 'Rua de teste, 00',
-      city: 'Cidade de teste',
-      state: 'Estado de teste',
-      zipcode: '00000-000',
+      Ramos: { connect: { id: ramo.id } },
     },
   });
   console.log('New person created: ', person.id);
+
+  // Create Endereco
+  const endereco = await prisma.enderecos.create({
+    data: {
+      cep: '00000-000',
+      logradouro: 'Rua de teste, 00',
+      bairro: 'Bairro de teste',
+      cidade: 'Cidade de teste',
+      estado: 'Estado de teste',
+      numero: '00',
+      Person: { connect: { id: person.id } },
+    },
+  });
+  console.log('New endereco created: ', endereco.id);
 
   // Create a license
   const license = await prisma.licenses.create({

@@ -13,10 +13,10 @@ export class CreatePersonDto {
 
   ie: string;
   phone: string;
-  zipcode: string;
-  address: string;
-  district: string;
-  city: string;
-  state: string;
-  number: string;
+  cep: string;
+  logradouro: string;
+  bairro: string;
+  cidade: string;
+  estado: string;
+  numero: string;
 }
