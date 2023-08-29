@@ -46,8 +46,8 @@ model Persons {
   Enderecos     Enderecos[]
   License       Licenses?
   Ramos         Ramos?      @relation(fields: [ramo_id], references: [id])
-  DividaCredor  Divida[]    @relation("CredorToDivida")
-  DividaDevedor Divida[]    @relation("DevedorToDivida")
+  DividaCredor  Dividas[]    @relation("CredorToDivida")
+  DividaDevedor Dividas[]    @relation("DevedorToDivida")
 
   @@fulltext([name, cpf_cnpj, email])
 }
@@ -112,7 +112,7 @@ model Roles {
   Permissions Permissions[]
 }
 
-model Divida {
+model Dividas {
   id                     Int       @id @default(autoincrement())
   credor_id              Int
   devedor_id             Int
