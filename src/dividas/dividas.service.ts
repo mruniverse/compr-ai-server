@@ -1,26 +1,42 @@
+import { PrismaService } from 'src/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
 import { CreateDividaDto } from './dto/create-divida.dto';
 import { UpdateDividaDto } from './dto/update-divida.dto';
 
 @Injectable()
 export class DividasService {
+  constructor(private prisma: PrismaService) {}
+
   create(createDividaDto: CreateDividaDto) {
-    return 'This action adds a new divida';
+    return this.prisma.dividas.create({
+      data: {
+        ...createDividaDto,
+      },
+    });
   }
 
   findAll() {
-    return `This action returns all dividas`;
+    return this.prisma.dividas.findMany();
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} divida`;
+    return this.prisma.dividas.findUnique({
+      where: { id },
+    });
   }
 
   update(id: number, updateDividaDto: UpdateDividaDto) {
-    return `This action updates a #${id} divida`;
+    return this.prisma.dividas.update({
+      where: { id },
+      data: {
+        ...updateDividaDto,
+      },
+    });
   }
 
   remove(id: number) {
-    return `This action removes a #${id} divida`;
+    return this.prisma.dividas.delete({
+      where: { id },
+    });
   }
 }
