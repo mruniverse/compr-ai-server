@@ -25,20 +25,21 @@ model Persons {
   name                         String
   cpf_cnpj                     String    @unique
   email                        String    @unique
+  score                        Int?
   ie                           String?
   phone                        String?
   sexo                         String?
   profissao                    String?
-  nascimento                   DateTime?
   estado_civil                 String?
   regime_de_bens               String?
-  casamento                    DateTime?
   razao_social                 String?
-  constituicao                 DateTime?
+  observacoes                  String?
   renda_mensal                 Float?
   comprometimento_renda_mensal Float?
   valor_patrimonio             Float?
-  observacoes                  String?
+  nascimento                   DateTime?
+  casamento                    DateTime?
+  constituicao                 DateTime?
   created_at                   DateTime? @default(now())
   updated_at                   DateTime? @updatedAt
 
@@ -54,7 +55,7 @@ model Persons {
 model Enderecos {
   id         Int       @id @default(autoincrement())
   person_id  Int
-  cep        String?
+  cep        String
   logradouro String?
   bairro     String?
   cidade     String?
@@ -112,21 +113,20 @@ model Roles {
 }
 
 model Divida {
-  id                     Int    @id @default(autoincrement())
+  id                     Int       @id @default(autoincrement())
   credor_id              Int
   devedor_id             Int
-  tipo_garantia          Int
-  modo_constituicao_mora Int
-  status                 Int
-  multa                  Float
-  mora                   Float
-  valor_total_inicial    Float
-  observacoes            String
-
-  data_contratacao       DateTime
-  data_pagamento         DateTime
-  data_prescricao        DateTime
-  data_constituicao_mora DateTime
+  tipo_garantia          Int?
+  modo_constituicao_mora Int?
+  status                 Int?
+  multa                  Float?
+  mora                   Float?
+  valor_total_inicial    Float?
+  observacoes            String?
+  data_contratacao       DateTime?
+  data_pagamento         DateTime?
+  data_prescricao        DateTime?
+  data_constituicao_mora DateTime?
   created_at             DateTime? @default(now())
   updated_at             DateTime? @updatedAt
 

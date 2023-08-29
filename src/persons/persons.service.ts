@@ -1,11 +1,22 @@
+import { EnderecosService } from './../enderecos/enderecos.service';
 import { PrismaService } from './../prisma/prisma.service';
-import { ConflictException, Injectable } from '@nestjs/common';
-import { CreatePersonDto } from './dto/create-person.dto';
-import { UpdatePersonDto } from './dto/update-person.dto';
+import { Injectable } from '@nestjs/common';
+import CreatePersonDto from './dto/create-person.dto';
+import UpdatePersonDto from './dto/update-person.dto';
 
 @Injectable()
 export class PersonsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService, private endereco: EnderecosService) {}
+
+  async exists(email: string, cpf_cnpj: string) {
+    const person = await this.prisma.persons.findFirst({
+      where: {
+        OR: [{ email }, { cpf_cnpj }],
+      },
+    });
+
+    return person ? true : false;
+  }
 
   async search(search: string) {
     return await this.prisma.persons.findMany({
@@ -16,41 +27,59 @@ export class PersonsService {
           sort: 'desc',
         },
       },
+      include: {
+        Enderecos: true,
+      },
     });
   }
 
-  // return errror if person already exists
   async create(createPersonDto: CreatePersonDto) {
-    const person = await this.prisma.persons.findFirst({
-      where: {
-        OR: [{ email: createPersonDto.email }, { cpf_cnpj: createPersonDto.cpf_cnpj }],
+    let newPerson: any = {
+      ...createPersonDto,
+      Ramos: {
+        connect: {
+          id: createPersonDto.ramo_id,
+        },
       },
-    });
+    };
 
-    if (person) throw new ConflictException('Person already exists');
+    if (newPerson.enderecos.length) {
+      newPerson = {
+        ...newPerson,
+        Enderecos: {
+          create: [
+            ...createPersonDto.enderecos.map((endereco) => {
+              delete endereco.person_id;
+              return endereco;
+            }),
+          ],
+        },
+      };
+    }
+
+    delete newPerson.ramo_id;
+    delete newPerson.enderecos;
+
     return this.prisma.persons.create({
       data: {
-        name: createPersonDto.name,
-        cpf_cnpj: createPersonDto.cpf_cnpj,
-        email: createPersonDto.email,
-        address: createPersonDto.address,
-        city: createPersonDto.city,
-        number: createPersonDto.number,
-        ie: createPersonDto.ie,
-        state: createPersonDto.state,
-        phone: createPersonDto.phone,
+        ...newPerson,
       },
     });
   }
 
   findAll() {
-    return this.prisma.persons.findMany();
+    return this.prisma.persons.findMany({
+      include: {
+        Enderecos: true,
+      },
+    });
   }
 
   findOneWithLicense(id: number) {
     return this.prisma.persons.findUnique({
       where: { id },
       include: {
+        Enderecos: true,
         License: {
           select: {
             id: true,
@@ -70,6 +99,18 @@ export class PersonsService {
   }
 
   update(id: number, updatePersonDto: UpdatePersonDto) {
+    if (updatePersonDto.enderecos.length) {
+      updatePersonDto.enderecos.forEach(async (endereco) => {
+        if (!endereco.id) {
+          await this.endereco.create({ ...endereco, person_id: id });
+        } else {
+          await this.endereco.update(endereco.id, endereco);
+        }
+      });
+    }
+
+    delete updatePersonDto.enderecos;
+
     return this.prisma.persons.update({ where: { id }, data: updatePersonDto });
   }
 

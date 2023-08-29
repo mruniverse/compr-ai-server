@@ -10,6 +10,9 @@ import { LicensesModule } from './licenses/licenses.module';
 import { PersonsModule } from './persons/persons.module';
 import { PermissionsModule } from './permissions/permissions.module';
 import { RolesModule } from './roles/roles.module';
+import { EnderecosModule } from './enderecos/enderecos.module';
+import { RamosModule } from './ramos/ramos.module';
+import { DividasModule } from './dividas/dividas.module';
 
 @Module({
   imports: [
@@ -24,6 +27,9 @@ import { RolesModule } from './roles/roles.module';
     PersonsModule,
     PermissionsModule,
     RolesModule,
+    EnderecosModule,
+    RamosModule,
+    DividasModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
