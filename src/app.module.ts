@@ -13,6 +13,7 @@ import { RolesModule } from './roles/roles.module';
 import { EnderecosModule } from './enderecos/enderecos.module';
 import { RamosModule } from './ramos/ramos.module';
 import { DividasModule } from './dividas/dividas.module';
+import { TipoOperacaoModule } from './tipo-operacao/tipo-operacao.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { DividasModule } from './dividas/dividas.module';
     EnderecosModule,
     RamosModule,
     DividasModule,
+    TipoOperacaoModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],

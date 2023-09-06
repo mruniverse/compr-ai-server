@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, BadRequestException } from '@nestjs/common';
 import { DividasService } from './dividas.service';
 import { CreateDividaDto } from './dto/create-divida.dto';
 import { UpdateDividaDto } from './dto/update-divida.dto';
@@ -9,6 +9,10 @@ export class DividasController {
 
   @Post()
   create(@Body() createDividaDto: CreateDividaDto) {
+    if (createDividaDto.credor_id == createDividaDto.devedor_id) {
+      throw new BadRequestException('Credor e devedor não podem ser os mesmos');
+    }
+
     return this.dividasService.create(createDividaDto);
   }
 

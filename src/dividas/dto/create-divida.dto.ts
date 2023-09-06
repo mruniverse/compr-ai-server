@@ -1,4 +1,4 @@
-import { IsOptional, IsInt, IsString, IsDate, IsNumber } from 'class-validator';
+import { IsOptional, IsInt, IsString, IsDateString, IsNumber } from 'class-validator';
 
 export class CreateDividaDto {
   @IsOptional()
@@ -12,7 +12,7 @@ export class CreateDividaDto {
 
   @IsOptional()
   @IsInt()
-  tipo_garantia?: number;
+  tipo_garantia_id?: number;
 
   @IsOptional()
   @IsInt()
@@ -39,18 +39,22 @@ export class CreateDividaDto {
   observacoes?: string;
 
   @IsOptional()
-  @IsDate()
+  @IsDateString()
+  data_vencimento: Date;
+
+  @IsOptional()
+  @IsDateString()
   data_contratacao?: Date;
 
   @IsOptional()
-  @IsDate()
+  @IsDateString()
   data_pagamento?: Date;
 
   @IsOptional()
-  @IsDate()
+  @IsDateString()
   data_prescricao?: Date;
 
   @IsOptional()
-  @IsDate()
+  @IsDateString()
   data_constituicao_mora?: Date;
 }

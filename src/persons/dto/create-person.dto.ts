@@ -1,3 +1,4 @@
+import EnderecosDto from 'src/enderecos/dto/create-endereco.dto';
 import { Type } from 'class-transformer';
 import {
   IsOptional,
@@ -10,7 +11,6 @@ import {
   IsArray,
   ValidateNested,
 } from 'class-validator';
-import EnderecosDto from 'src/enderecos/dto/create-endereco.dto';
 
 enum EstadoCivil {
   SOLTEIRO = 'solteiro',

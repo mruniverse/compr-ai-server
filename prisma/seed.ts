@@ -3,14 +3,13 @@ import * as bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
-async function main() {
-  // Create all possible permissions
-  const permissions = await prisma.permissions.createMany({
+function seedPermissions() {
+  return prisma.permissions.createMany({
     data: [
       { name: 'Dashboard', route: '/dashboard' },
       { name: 'Contratos', route: '/contracts' },
       { name: 'Pessoa', route: '/manage/persons' },
-      { name: 'Contrato', route: '/manage/contracts' },
+      { name: 'Dívida', route: '/manage/dividas' },
       { name: 'Securitizadora', route: '/manage/securitization' },
       { name: 'Gestão de bens', route: '/assets' },
       { name: 'Usuários', route: '/auth/users' },
@@ -18,16 +17,14 @@ async function main() {
       { name: 'Permissões', route: '/auth/roles' },
     ],
   });
-  console.log('New permissions created: ', permissions);
+}
 
-  // Create all possible roles
-  const roles = await prisma.roles.createMany({
+async function seedRoles() {
+  await prisma.roles.createMany({
     data: [{ name: 'Administrador' }, { name: 'Usuário' }],
   });
-  console.log('New roles created: ', roles);
 
-  // Attribute all permissions to the administrator role
-  const adminRole = await prisma.roles.update({
+  await prisma.roles.update({
     where: { name: 'Administrador' },
     data: {
       Permissions: {
@@ -35,10 +32,8 @@ async function main() {
       },
     },
   });
-  console.log('Permissions added to administrator role: ', adminRole.id);
 
-  // Attribute all permissions to the user role
-  const userRole = await prisma.roles.update({
+  return prisma.roles.update({
     where: { name: 'Usuário' },
     data: {
       Permissions: {
@@ -46,52 +41,47 @@ async function main() {
       },
     },
   });
-  console.log('Permissions added to user role: ', userRole.id);
+}
 
-  // Create new ramo
-  const ramo = await prisma.ramos.create({
-    data: {
-      name: 'Ramo de teste',
-    },
+function seedRamos() {
+  return prisma.ramos.createMany({
+    data: [{ name: 'Indústria' }, { name: 'Comércio' }, { name: 'Serviços' }],
   });
+}
 
-  // Create a person
-  const person = await prisma.persons.create({
+function seedPersons() {
+  return prisma.persons.create({
     data: {
       name: 'Pessoa de teste',
       cpf_cnpj: '000.000.000-00',
       email: 'admin@rocksky.com',
-      Ramos: { connect: { id: ramo.id } },
+      Ramos: { connect: { id: 1 } },
+      Enderecos: {
+        create: {
+          cep: '00000-000',
+          logradouro: 'Rua de teste, 00',
+          bairro: 'Bairro de teste',
+          cidade: 'Cidade de teste',
+          estado: 'Estado de teste',
+          numero: '00',
+        },
+      },
     },
   });
-  console.log('New person created: ', person.id);
+}
 
-  // Create Endereco
-  const endereco = await prisma.enderecos.create({
-    data: {
-      cep: '00000-000',
-      logradouro: 'Rua de teste, 00',
-      bairro: 'Bairro de teste',
-      cidade: 'Cidade de teste',
-      estado: 'Estado de teste',
-      numero: '00',
-      Person: { connect: { id: person.id } },
-    },
-  });
-  console.log('New endereco created: ', endereco.id);
-
-  // Create a license
-  const license = await prisma.licenses.create({
+function seedLicenses() {
+  return prisma.licenses.create({
     data: {
       max_users: 10,
       Person: { connect: { id: 1 } },
     },
   });
-  console.log('New license created: ', license.id);
+}
 
-  // Create a user with the administrator role
+async function seedUsers() {
   const hash = await bcrypt.hash('temporarypassword', 10);
-  const user = await prisma.users.create({
+  return prisma.users.create({
     data: {
       name: 'Administrador',
       email: 'admin@rocksky.com',
@@ -106,7 +96,29 @@ async function main() {
       },
     },
   });
-  console.log('New user created: ', user);
+}
+
+function seedTipoGarantia() {
+  return prisma.tipoGarantia.createMany({
+    data: [{ name: 'Fidejussória' }, { name: 'Real' }],
+  });
+}
+
+function seedStatusParcela() {
+  return prisma.statusParcela.createMany({
+    data: [{ nome: 'Pendente' }, { nome: 'Pago' }, { nome: 'Atrasado' }],
+  });
+}
+
+async function main() {
+  await seedPermissions();
+  await seedRoles();
+  await seedRamos();
+  await seedPersons();
+  await seedLicenses();
+  await seedUsers();
+  await seedTipoGarantia();
+  await seedStatusParcela();
 }
 
 main()

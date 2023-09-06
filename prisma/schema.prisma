@@ -43,11 +43,29 @@ model Persons {
   created_at                   DateTime? @default(now())
   updated_at                   DateTime? @updatedAt
 
-  Enderecos     Enderecos[]
-  License       Licenses?
-  Ramos         Ramos?      @relation(fields: [ramo_id], references: [id])
-  DividaCredor  Dividas[]    @relation("CredorToDivida")
-  DividaDevedor Dividas[]    @relation("DevedorToDivida")
+  Enderecos                   Enderecos[]
+  License                     Licenses?
+  Ramos                       Ramos?                @relation(fields: [ramo_id], references: [id])
+  DividaCredor                Dividas[]             @relation("CredorToDivida")
+  DividaDevedor               Dividas[]             @relation("DevedorToDivida")
+  HipotecaMutuario            Hipoteca[]            @relation("MutuarioHipoteca")
+  HipotecaCredor              Hipoteca[]            @relation("CredorHipoteca")
+  AlienacaoFiduciariaMutuario AlienacaoFiduciaria[] @relation("MutuarioAlienacaoFiduciaria")
+  AlienacaoFiduciariaCredor   AlienacaoFiduciaria[] @relation("CredorAlienacaoFiduciaria")
+  PenhorMutuario              Penhor[]              @relation("MutuarioPenhor")
+  PenhorCredor                Penhor[]              @relation("CredorPenhor")
+  AvalAvalista                Aval[]                @relation("AvalistaAval")
+  AvalDevedor                 Aval[]                @relation("DevedorAval")
+  FiancaFiador                Fianca[]              @relation("FiadorFianca")
+  FiancaDevedor               Fianca[]              @relation("DevedorFianca")
+  SeguroGarantiaSeguradora    SeguroGarantia[]      @relation("SeguradoraSeguroGarantia")
+  SeguroGarantiaTomadorSeguro SeguroGarantia[]      @relation("TomadorSeguroSeguroGarantia")
+  CartaDeCreditoEmitente      CartaDeCredito[]      @relation("EmitenteCartaDeCredito")
+  CartaDeCreditoBeneficiario  CartaDeCredito[]      @relation("BeneficiarioCartaDeCredito")
+  ChequeEmitente              Cheque[]              @relation("EmitenteCheque")
+  ChequeBeneficiario          Cheque[]              @relation("BeneficiarioCheque")
+  DuplicataEmitente           Duplicata[]           @relation("EmitenteDuplicata")
+  DuplicataSacado             Duplicata[]           @relation("SacadoDuplicata")
 
   @@fulltext([name, cpf_cnpj, email])
 }
@@ -116,13 +134,14 @@ model Dividas {
   id                     Int       @id @default(autoincrement())
   credor_id              Int
   devedor_id             Int
-  tipo_garantia          Int?
+  tipo_garantia_id       Int?
   modo_constituicao_mora Int?
   status                 Int?
   multa                  Float?
   mora                   Float?
   valor_total_inicial    Float?
   observacoes            String?
+  data_vencimento        DateTime?
   data_contratacao       DateTime?
   data_pagamento         DateTime?
   data_prescricao        DateTime?
@@ -130,6 +149,179 @@ model Dividas {
   created_at             DateTime? @default(now())
   updated_at             DateTime? @updatedAt
 
-  Credor  Persons @relation("CredorToDivida", fields: [credor_id], references: [id])
-  Devedor Persons @relation("DevedorToDivida", fields: [devedor_id], references: [id])
+  Credor        Persons         @relation("CredorToDivida", fields: [credor_id], references: [id])
+  Devedor       Persons         @relation("DevedorToDivida", fields: [devedor_id], references: [id])
+  TipoGarantia  TipoGarantia?   @relation(fields: [tipo_garantia_id], references: [id])
+  TipoOperacao  TipoOperacao[]
+  ParcelaDivida ParcelaDivida[]
+}
+
+model TipoGarantia {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+
+  Dividas Dividas[]
+}
+
+model ParcelaDivida {
+  id                 Int       @id @default(autoincrement())
+  divida_id          Int
+  numero_parcela     Int
+  status             Int
+  valor_parcela      Float
+  taxa_juros         Float
+  tipo_juros         Float
+  data_vencimento    DateTime
+  ultima_atualizacao DateTime
+  data_pagamento     DateTime?
+  observacoes        String?
+
+  Divida        Dividas        @relation(fields: [divida_id], references: [id])
+  StatusParcela StatusParcela? @relation(fields: [status], references: [id])
+}
+
+model StatusParcela {
+  id   Int    @id @default(autoincrement())
+  nome String
+
+  ParcelaDivida ParcelaDivida[]
+}
+
+model TipoOperacao {
+  id        Int @id @default(autoincrement())
+  divida_id Int
+
+  Hipoteca            Hipoteca[]
+  AlienacaoFiduciaria AlienacaoFiduciaria[]
+  Penhor              Penhor[]
+  Aval                Aval[]
+  Fianca              Fianca[]
+  SeguroGarantia      SeguroGarantia[]
+  CartaDeCredito      CartaDeCredito[]
+  Cheque              Cheque[]
+  Duplicata           Duplicata[]
+  Divida              Dividas               @relation(fields: [divida_id], references: [id])
+}
+
+model Hipoteca {
+  id                    Int      @id @default(autoincrement())
+  mutuario_id           Int
+  credor_hipotecario_id Int
+  descricao_bem_imovel  String
+  valor_emprestimo      Float
+  valor_avaliado_imovel Float
+  data_vencimento       DateTime
+  termos_condicoes      String
+
+  TipoOperacao      TipoOperacao[]
+  Mutuario          Persons        @relation("MutuarioHipoteca", fields: [mutuario_id], references: [id])
+  CredorHipotecario Persons        @relation("CredorHipoteca", fields: [credor_hipotecario_id], references: [id])
+}
+
+model AlienacaoFiduciaria {
+  id                   Int      @id @default(autoincrement())
+  descricao_bem_movel  String
+  valor_financiado     Float
+  detalhes_bem_movel   String
+  mutuario_id          Int
+  credor_fiduciario_id Int
+  data_vencimento      DateTime
+  termos_condicoes     String
+
+  TipoOperacao TipoOperacao[]
+  Mutuario     Persons        @relation("MutuarioAlienacaoFiduciaria", fields: [mutuario_id], references: [id])
+  Credor       Persons        @relation("CredorAlienacaoFiduciaria", fields: [credor_fiduciario_id], references: [id])
+}
+
+model Penhor {
+  id                   Int      @id @default(autoincrement())
+  descricao_bem_movel  String
+  valor_emprestimo     Float
+  detalhes_bem_movel   String
+  mutuario_id          Int
+  credor_penhorista_id Int
+  data_vencimento      DateTime
+  termos_condicoes     String
+
+  TipoOperacao TipoOperacao[]
+  Mutuario     Persons        @relation("MutuarioPenhor", fields: [mutuario_id], references: [id])
+  Credor       Persons        @relation("CredorPenhor", fields: [credor_penhorista_id], references: [id])
+}
+
+model Aval {
+  id                       Int    @id @default(autoincrement())
+  avalista_id              Int
+  devedor_id               Int
+  valor_divida_avalizada   Float
+  relacao_avalista_devedor String
+  termos_condicoes         String
+
+  TipoOperacao TipoOperacao[]
+  Avalista     Persons        @relation("AvalistaAval", fields: [avalista_id], references: [id])
+  Devedor      Persons        @relation("DevedorAval", fields: [devedor_id], references: [id])
+}
+
+model Fianca {
+  id                     Int    @id @default(autoincrement())
+  fiador_id              Int
+  devedor_id             Int
+  valor_divida_fiancada  Float
+  relacao_fiador_devedor String
+  termos_condicoes       String
+
+  TipoOperacao TipoOperacao[]
+  Fiador       Persons        @relation("FiadorFianca", fields: [fiador_id], references: [id])
+  Devedor      Persons        @relation("DevedorFianca", fields: [devedor_id], references: [id])
+}
+
+model SeguroGarantia {
+  id                      Int    @id @default(autoincrement())
+  seguradora_id           Int
+  tomador_seguro_id       Int
+  valor_garantia_segurada Float
+  termos_condicoes        String
+
+  TipoOperacao  TipoOperacao[]
+  Seguradora    Persons        @relation("SeguradoraSeguroGarantia", fields: [seguradora_id], references: [id])
+  TomadorSeguro Persons        @relation("TomadorSeguroSeguroGarantia", fields: [tomador_seguro_id], references: [id])
+}
+
+model CartaDeCredito {
+  id                  Int    @id @default(autoincrement())
+  emitente_id         Int
+  beneficiario_id     Int
+  valor_carta_credito Float
+  condicoes_liberacao String
+
+  TipoOperacao TipoOperacao[]
+  Emitente     Persons        @relation("EmitenteCartaDeCredito", fields: [emitente_id], references: [id])
+  Beneficiario Persons        @relation("BeneficiarioCartaDeCredito", fields: [beneficiario_id], references: [id])
+}
+
+model Cheque {
+  id                 Int      @id @default(autoincrement())
+  emitente_cheque_id Int
+  beneficiario_id    Int
+  valor_cheque       Float
+  data_emissao       DateTime
+  data_vencimento    DateTime
+  informacoes_conta  String
+
+  TipoOperacao       TipoOperacao[]
+  EmitenteCheque     Persons        @relation("EmitenteCheque", fields: [emitente_cheque_id], references: [id])
+  BeneficiarioCheque Persons        @relation("BeneficiarioCheque", fields: [beneficiario_id], references: [id])
+}
+
+model Duplicata {
+  id                      Int      @id @default(autoincrement())
+  emitente_duplicata_id   Int
+  sacado_id               Int
+  valor_duplicata         Float
+  data_emissao            DateTime
+  data_vencimento         DateTime
+  detalhes_itens_servicos String
+
+  TipoOperacao      TipoOperacao[]
+  EmitenteDuplicata Persons        @relation("EmitenteDuplicata", fields: [emitente_duplicata_id], references: [id])
+  Sacado            Persons        @relation("SacadoDuplicata", fields: [sacado_id], references: [id])
 }
