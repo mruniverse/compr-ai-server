@@ -105,7 +105,7 @@ function seedTipoGarantia() {
 }
 
 function seedStatusParcela() {
-  return prisma.statusParcela.createMany({
+  return prisma.statusParcelas.createMany({
     data: [{ nome: 'Pendente' }, { nome: 'Pago' }, { nome: 'Atrasado' }],
   });
 }

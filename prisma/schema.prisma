@@ -149,11 +149,10 @@ model Dividas {
   created_at             DateTime? @default(now())
   updated_at             DateTime? @updatedAt
 
-  Credor        Persons         @relation("CredorToDivida", fields: [credor_id], references: [id])
-  Devedor       Persons         @relation("DevedorToDivida", fields: [devedor_id], references: [id])
-  TipoGarantia  TipoGarantia?   @relation(fields: [tipo_garantia_id], references: [id])
-  TipoOperacao  TipoOperacao[]
-  ParcelaDivida ParcelaDivida[]
+  Credor       Persons        @relation("CredorToDivida", fields: [credor_id], references: [id])
+  Devedor      Persons        @relation("DevedorToDivida", fields: [devedor_id], references: [id])
+  TipoGarantia TipoGarantia?  @relation(fields: [tipo_garantia_id], references: [id])
+  TipoOperacao TipoOperacao[]
 }
 
 model TipoGarantia {
@@ -163,28 +162,24 @@ model TipoGarantia {
   Dividas Dividas[]
 }
 
-model ParcelaDivida {
+model ParcelasOperacao {
   id                 Int       @id @default(autoincrement())
-  divida_id          Int
+  status_id          Int
   numero_parcela     Int
-  status             Int
-  valor_parcela      Float
-  taxa_juros         Float
-  tipo_juros         Float
+  ultima_atualizacao DateTime // ultima atualizacao de juros
   data_vencimento    DateTime
-  ultima_atualizacao DateTime
   data_pagamento     DateTime?
-  observacoes        String?
 
-  Divida        Dividas        @relation(fields: [divida_id], references: [id])
-  StatusParcela StatusParcela? @relation(fields: [status], references: [id])
+  StatusParcelas StatusParcelas @relation(fields: [status_id], references: [id])
+  Duplicata      Duplicata[]
+  Cheque         Cheque[]
 }
 
-model StatusParcela {
+model StatusParcelas {
   id   Int    @id @default(autoincrement())
   nome String
 
-  ParcelaDivida ParcelaDivida[]
+  ParcelasOperacao ParcelasOperacao[]
 }
 
 model TipoOperacao {
@@ -299,21 +294,28 @@ model CartaDeCredito {
 }
 
 model Cheque {
-  id                 Int      @id @default(autoincrement())
-  emitente_cheque_id Int
-  beneficiario_id    Int
-  valor_cheque       Float
-  data_emissao       DateTime
-  data_vencimento    DateTime
-  informacoes_conta  String
+  id                        Int      @id @default(autoincrement())
+  parcela_id                Int
+  emitente_cheque_id        Int
+  beneficiario_id           Int
+  operacao_alinea_devolucao Int
+  numero_cheque             Int
+  banco                     Int
+  agencia                   Int
+  conta                     Int
+  valor_cheque              Float
+  data_emissao              DateTime
+  data_vencimento           DateTime
 
   TipoOperacao       TipoOperacao[]
-  EmitenteCheque     Persons        @relation("EmitenteCheque", fields: [emitente_cheque_id], references: [id])
-  BeneficiarioCheque Persons        @relation("BeneficiarioCheque", fields: [beneficiario_id], references: [id])
+  EmitenteCheque     Persons          @relation("EmitenteCheque", fields: [emitente_cheque_id], references: [id])
+  BeneficiarioCheque Persons          @relation("BeneficiarioCheque", fields: [beneficiario_id], references: [id])
+  ParcelasOperacao   ParcelasOperacao @relation(fields: [parcela_id], references: [id])
 }
 
 model Duplicata {
   id                      Int      @id @default(autoincrement())
+  parcela_id              Int
   emitente_duplicata_id   Int
   sacado_id               Int
   valor_duplicata         Float
@@ -322,6 +324,7 @@ model Duplicata {
   detalhes_itens_servicos String
 
   TipoOperacao      TipoOperacao[]
-  EmitenteDuplicata Persons        @relation("EmitenteDuplicata", fields: [emitente_duplicata_id], references: [id])
-  Sacado            Persons        @relation("SacadoDuplicata", fields: [sacado_id], references: [id])
+  EmitenteDuplicata Persons          @relation("EmitenteDuplicata", fields: [emitente_duplicata_id], references: [id])
+  Sacado            Persons          @relation("SacadoDuplicata", fields: [sacado_id], references: [id])
+  ParcelasOperacao  ParcelasOperacao @relation(fields: [parcela_id], references: [id])
 }
