@@ -27,8 +27,12 @@ export class TipoOperacaoService {
       createTipoOperacaoDto.cheque.forEach((chequeDto: CreateChequeDto) => {
         const emitente_cheque_id = chequeDto.emitente_cheque_id;
         const beneficiario_id = chequeDto.beneficiario_id;
+        const parcela_id = chequeDto.parcela_id;
+
         delete chequeDto.emitente_cheque_id;
         delete chequeDto.beneficiario_id;
+        delete chequeDto.parcela_id;
+
         cheque.push({
           ...chequeDto,
           EmitenteCheque: {
@@ -39,6 +43,11 @@ export class TipoOperacaoService {
           BeneficiarioCheque: {
             connect: {
               id: beneficiario_id,
+            },
+          },
+          ParcelasOperacao: {
+            connect: {
+              id: parcela_id,
             },
           },
         });
@@ -57,8 +66,12 @@ export class TipoOperacaoService {
       createTipoOperacaoDto.duplicata.forEach((duplicataDto: CreateDuplicataDto) => {
         const emitente_duplicata_id = duplicataDto.emitente_duplicata_id;
         const sacado_id = duplicataDto.sacado_id;
+        const parcela_id = duplicataDto.parcela_id;
+
         delete duplicataDto.emitente_duplicata_id;
         delete duplicataDto.sacado_id;
+        delete duplicataDto.parcela_id;
+
         duplicata.push({
           ...duplicataDto,
           EmitenteDuplicata: {
@@ -69,6 +82,11 @@ export class TipoOperacaoService {
           Sacado: {
             connect: {
               id: sacado_id,
+            },
+          },
+          ParcelasOperacao: {
+            connect: {
+              id: parcela_id,
             },
           },
         });

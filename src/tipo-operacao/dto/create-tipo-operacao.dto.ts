@@ -59,6 +59,9 @@ export class CreateChequeDto {
   beneficiario_id: number;
 
   @IsNumber()
+  parcela_id: number;
+
+  @IsNumber()
   valor_cheque: number;
 
   @IsDateString()
@@ -69,6 +72,21 @@ export class CreateChequeDto {
 
   @IsString()
   informacoes_conta: string;
+
+  @IsNumber()
+  operacao_alinea_devolucao: number;
+
+  @IsNumber()
+  numero_cheque: number;
+
+  @IsNumber()
+  banco: number;
+
+  @IsNumber()
+  agencia: number;
+
+  @IsNumber()
+  conta: number;
 }
 
 export class CreateDuplicataDto {
@@ -77,6 +95,9 @@ export class CreateDuplicataDto {
 
   @IsNumber()
   sacado_id: number;
+
+  @IsNumber()
+  parcela_id: number;
 
   @IsNumber()
   valor_duplicata: number;
