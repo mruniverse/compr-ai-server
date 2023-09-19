@@ -15,6 +15,14 @@ export class DividasService {
       switch (key) {
         case 'id':
           break;
+        case 'indices_ids':
+          newDivida = {
+            ...newDivida,
+            Indices: {
+              connect: divida.indices_ids.map((id) => ({ id })),
+            },
+          };
+          break;
         case 'tipo_garantia_id':
           newDivida = {
             ...newDivida,

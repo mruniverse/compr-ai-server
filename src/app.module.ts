@@ -14,6 +14,7 @@ import { EnderecosModule } from './enderecos/enderecos.module';
 import { RamosModule } from './ramos/ramos.module';
 import { DividasModule } from './dividas/dividas.module';
 import { TipoOperacaoModule } from './tipo-operacao/tipo-operacao.module';
+import { IndicesModule } from './indices/indices.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { TipoOperacaoModule } from './tipo-operacao/tipo-operacao.module';
     RamosModule,
     DividasModule,
     TipoOperacaoModule,
+    IndicesModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],

@@ -10,6 +10,9 @@ export class CreateDividaDto {
   @IsInt()
   devedor_id: number;
 
+  @IsInt({ each: true })
+  indices_ids: number[];
+
   @IsOptional()
   @IsInt()
   tipo_garantia_id?: number;
@@ -57,4 +60,7 @@ export class CreateDividaDto {
   @IsOptional()
   @IsDateString()
   data_constituicao_mora?: Date;
+
+  @IsOptional()
+  documento_contratual?: Blob;
 }

@@ -15,6 +15,7 @@ function seedPermissions() {
       { name: 'Usuários', route: '/auth/users' },
       { name: 'Licenças', route: '/auth/licenses' },
       { name: 'Permissões', route: '/auth/roles' },
+      { name: 'Indices', route: '/auth/indices' },
     ],
   });
 }
@@ -28,7 +29,18 @@ async function seedRoles() {
     where: { name: 'Administrador' },
     data: {
       Permissions: {
-        connect: [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }, { id: 5 }, { id: 6 }, { id: 7 }, { id: 8 }, { id: 9 }],
+        connect: [
+          { id: 1 },
+          { id: 2 },
+          { id: 3 },
+          { id: 4 },
+          { id: 5 },
+          { id: 6 },
+          { id: 7 },
+          { id: 8 },
+          { id: 9 },
+          { id: 10 },
+        ],
       },
     },
   });

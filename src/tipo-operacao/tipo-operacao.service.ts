@@ -10,11 +10,11 @@ export class TipoOperacaoService {
   create(createTipoOperacaoDto: CreateTipoOperacaoDto) {
     const tipoOperacao = this.getTipoOperacaoConnections(createTipoOperacaoDto);
 
-    return this.prisma.tipoOperacao.create({ data: tipoOperacao });
+    return this.prisma.tiposOperacoes.create({ data: tipoOperacao });
   }
 
   getTipoOperacaoConnections(createTipoOperacaoDto: CreateTipoOperacaoDto) {
-    let tipoOperacao: Prisma.TipoOperacaoCreateInput = {
+    let tipoOperacao: Prisma.TiposOperacoesCreateInput = {
       Divida: {
         connect: {
           id: createTipoOperacaoDto.divida_id,

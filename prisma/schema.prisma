@@ -149,10 +149,22 @@ model Dividas {
   created_at             DateTime? @default(now())
   updated_at             DateTime? @updatedAt
 
-  Credor       Persons        @relation("CredorToDivida", fields: [credor_id], references: [id])
-  Devedor      Persons        @relation("DevedorToDivida", fields: [devedor_id], references: [id])
-  TipoGarantia TipoGarantia?  @relation(fields: [tipo_garantia_id], references: [id])
-  TipoOperacao TipoOperacao[]
+  Credor         Persons          @relation("CredorToDivida", fields: [credor_id], references: [id])
+  Devedor        Persons          @relation("DevedorToDivida", fields: [devedor_id], references: [id])
+  TipoGarantia   TipoGarantia?    @relation(fields: [tipo_garantia_id], references: [id])
+  TiposOperacoes TiposOperacoes[]
+  Indices        Indices[]
+}
+
+model Indices {
+  id         Int       @id @default(autoincrement())
+  nome       String
+  valor      Float
+  descricao  String?
+  created_at DateTime? @default(now())
+  updated_at DateTime? @updatedAt
+
+  Dividas Dividas[]
 }
 
 model TipoGarantia {
@@ -170,9 +182,9 @@ model ParcelasOperacao {
   data_vencimento    DateTime
   data_pagamento     DateTime?
 
+  Cheque         Cheque?
+  Duplicata      Duplicata?
   StatusParcelas StatusParcelas @relation(fields: [status_id], references: [id])
-  Duplicata      Duplicata[]
-  Cheque         Cheque[]
 }
 
 model StatusParcelas {
@@ -182,7 +194,7 @@ model StatusParcelas {
   ParcelasOperacao ParcelasOperacao[]
 }
 
-model TipoOperacao {
+model TiposOperacoes {
   id        Int @id @default(autoincrement())
   divida_id Int
 
@@ -208,9 +220,9 @@ model Hipoteca {
   data_vencimento       DateTime
   termos_condicoes      String
 
-  TipoOperacao      TipoOperacao[]
-  Mutuario          Persons        @relation("MutuarioHipoteca", fields: [mutuario_id], references: [id])
-  CredorHipotecario Persons        @relation("CredorHipoteca", fields: [credor_hipotecario_id], references: [id])
+  TiposOperacoes    TiposOperacoes[]
+  Mutuario          Persons          @relation("MutuarioHipoteca", fields: [mutuario_id], references: [id])
+  CredorHipotecario Persons          @relation("CredorHipoteca", fields: [credor_hipotecario_id], references: [id])
 }
 
 model AlienacaoFiduciaria {
@@ -223,9 +235,9 @@ model AlienacaoFiduciaria {
   data_vencimento      DateTime
   termos_condicoes     String
 
-  TipoOperacao TipoOperacao[]
-  Mutuario     Persons        @relation("MutuarioAlienacaoFiduciaria", fields: [mutuario_id], references: [id])
-  Credor       Persons        @relation("CredorAlienacaoFiduciaria", fields: [credor_fiduciario_id], references: [id])
+  TiposOperacoes TiposOperacoes[]
+  Mutuario       Persons          @relation("MutuarioAlienacaoFiduciaria", fields: [mutuario_id], references: [id])
+  Credor         Persons          @relation("CredorAlienacaoFiduciaria", fields: [credor_fiduciario_id], references: [id])
 }
 
 model Penhor {
@@ -238,9 +250,9 @@ model Penhor {
   data_vencimento      DateTime
   termos_condicoes     String
 
-  TipoOperacao TipoOperacao[]
-  Mutuario     Persons        @relation("MutuarioPenhor", fields: [mutuario_id], references: [id])
-  Credor       Persons        @relation("CredorPenhor", fields: [credor_penhorista_id], references: [id])
+  TiposOperacoes TiposOperacoes[]
+  Mutuario       Persons          @relation("MutuarioPenhor", fields: [mutuario_id], references: [id])
+  Credor         Persons          @relation("CredorPenhor", fields: [credor_penhorista_id], references: [id])
 }
 
 model Aval {
@@ -251,9 +263,9 @@ model Aval {
   relacao_avalista_devedor String
   termos_condicoes         String
 
-  TipoOperacao TipoOperacao[]
-  Avalista     Persons        @relation("AvalistaAval", fields: [avalista_id], references: [id])
-  Devedor      Persons        @relation("DevedorAval", fields: [devedor_id], references: [id])
+  TiposOperacoes TiposOperacoes[]
+  Avalista       Persons          @relation("AvalistaAval", fields: [avalista_id], references: [id])
+  Devedor        Persons          @relation("DevedorAval", fields: [devedor_id], references: [id])
 }
 
 model Fianca {
@@ -264,9 +276,9 @@ model Fianca {
   relacao_fiador_devedor String
   termos_condicoes       String
 
-  TipoOperacao TipoOperacao[]
-  Fiador       Persons        @relation("FiadorFianca", fields: [fiador_id], references: [id])
-  Devedor      Persons        @relation("DevedorFianca", fields: [devedor_id], references: [id])
+  TiposOperacoes TiposOperacoes[]
+  Fiador         Persons          @relation("FiadorFianca", fields: [fiador_id], references: [id])
+  Devedor        Persons          @relation("DevedorFianca", fields: [devedor_id], references: [id])
 }
 
 model SeguroGarantia {
@@ -276,9 +288,9 @@ model SeguroGarantia {
   valor_garantia_segurada Float
   termos_condicoes        String
 
-  TipoOperacao  TipoOperacao[]
-  Seguradora    Persons        @relation("SeguradoraSeguroGarantia", fields: [seguradora_id], references: [id])
-  TomadorSeguro Persons        @relation("TomadorSeguroSeguroGarantia", fields: [tomador_seguro_id], references: [id])
+  TiposOperacoes TiposOperacoes[]
+  Seguradora     Persons          @relation("SeguradoraSeguroGarantia", fields: [seguradora_id], references: [id])
+  TomadorSeguro  Persons          @relation("TomadorSeguroSeguroGarantia", fields: [tomador_seguro_id], references: [id])
 }
 
 model CartaDeCredito {
@@ -288,14 +300,14 @@ model CartaDeCredito {
   valor_carta_credito Float
   condicoes_liberacao String
 
-  TipoOperacao TipoOperacao[]
-  Emitente     Persons        @relation("EmitenteCartaDeCredito", fields: [emitente_id], references: [id])
-  Beneficiario Persons        @relation("BeneficiarioCartaDeCredito", fields: [beneficiario_id], references: [id])
+  TiposOperacoes TiposOperacoes[]
+  Emitente       Persons          @relation("EmitenteCartaDeCredito", fields: [emitente_id], references: [id])
+  Beneficiario   Persons          @relation("BeneficiarioCartaDeCredito", fields: [beneficiario_id], references: [id])
 }
 
 model Cheque {
   id                        Int      @id @default(autoincrement())
-  parcela_id                Int
+  parcela_id                Int      @unique
   emitente_cheque_id        Int
   beneficiario_id           Int
   operacao_alinea_devolucao Int
@@ -307,15 +319,15 @@ model Cheque {
   data_emissao              DateTime
   data_vencimento           DateTime
 
-  TipoOperacao       TipoOperacao[]
+  TiposOperacoes     TiposOperacoes[]
+  ParcelasOperacao   ParcelasOperacao @relation(fields: [parcela_id], references: [id])
   EmitenteCheque     Persons          @relation("EmitenteCheque", fields: [emitente_cheque_id], references: [id])
   BeneficiarioCheque Persons          @relation("BeneficiarioCheque", fields: [beneficiario_id], references: [id])
-  ParcelasOperacao   ParcelasOperacao @relation(fields: [parcela_id], references: [id])
 }
 
 model Duplicata {
   id                      Int      @id @default(autoincrement())
-  parcela_id              Int
+  parcela_id              Int      @unique
   emitente_duplicata_id   Int
   sacado_id               Int
   valor_duplicata         Float
@@ -323,8 +335,8 @@ model Duplicata {
   data_vencimento         DateTime
   detalhes_itens_servicos String
 
-  TipoOperacao      TipoOperacao[]
+  TiposOperacoes    TiposOperacoes[]
+  ParcelasOperacao  ParcelasOperacao @relation(fields: [parcela_id], references: [id])
   EmitenteDuplicata Persons          @relation("EmitenteDuplicata", fields: [emitente_duplicata_id], references: [id])
   Sacado            Persons          @relation("SacadoDuplicata", fields: [sacado_id], references: [id])
-  ParcelasOperacao  ParcelasOperacao @relation(fields: [parcela_id], references: [id])
 }

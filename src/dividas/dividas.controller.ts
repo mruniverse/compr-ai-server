@@ -13,6 +13,8 @@ export class DividasController {
       throw new BadRequestException('Credor e devedor não podem ser os mesmos');
     }
 
+    delete createDividaDto.documento_contratual;
+
     return this.dividasService.create(createDividaDto);
   }
 
