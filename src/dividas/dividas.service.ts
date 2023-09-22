@@ -73,6 +73,17 @@ export class DividasService {
     });
   }
 
+  findAllByVencimento(inicial: Date, final: Date) {
+    return this.prisma.dividas.findMany({
+      where: {
+        data_vencimento: {
+          gte: inicial,
+          lte: final,
+        },
+      },
+    });
+  }
+
   findAll() {
     return this.prisma.dividas.findMany({
       include: {

@@ -14,8 +14,14 @@ export class DividasController {
     }
 
     delete createDividaDto.documento_contratual;
+    delete createDividaDto.tiposOperacao;
 
     return this.dividasService.create(createDividaDto);
+  }
+
+  @Post('vencimento')
+  async vencimento(@Body('inicial') inicial: Date, @Body('final') final: Date) {
+    return await this.dividasService.findAllByVencimento(inicial, final);
   }
 
   @Get()
