@@ -65,5 +65,5 @@ export class CreateDividaDto {
   documento_contratual?: Blob;
 
   @IsOptional()
-  tiposOperacao?: any;
+  TiposOperacoes?: any;
 }

@@ -14,7 +14,7 @@ export class DividasController {
     }
 
     delete createDividaDto.documento_contratual;
-    delete createDividaDto.tiposOperacao;
+    delete createDividaDto.TiposOperacoes;
 
     return this.dividasService.create(createDividaDto);
   }
