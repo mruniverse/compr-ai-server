@@ -87,9 +87,14 @@ export class DividasService {
   findAll() {
     return this.prisma.dividas.findMany({
       include: {
+        Credor: {
+          include: {
+            Enderecos: true,
+          },
+        },
         Devedor: {
-          select: {
-            name: true,
+          include: {
+            Enderecos: true,
           },
         },
         TipoGarantia: {

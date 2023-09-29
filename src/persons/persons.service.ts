@@ -1,3 +1,4 @@
+import { UpdateDividaDto } from './../dividas/dto/update-divida.dto';
 import { EnderecosService } from './../enderecos/enderecos.service';
 import { PrismaService } from './../prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
@@ -99,7 +100,15 @@ export class PersonsService {
   }
 
   update(id: number, updatePersonDto: UpdatePersonDto) {
-    if (updatePersonDto.enderecos.length) {
+    if (updatePersonDto.nascimento) {
+      delete updatePersonDto.nascimento;
+    }
+
+    if (updatePersonDto.casamento) {
+      delete updatePersonDto.casamento;
+    }
+
+    if (updatePersonDto.enderecos) {
       updatePersonDto.enderecos.forEach(async (endereco) => {
         if (!endereco.id) {
           await this.endereco.create({ ...endereco, person_id: id });
