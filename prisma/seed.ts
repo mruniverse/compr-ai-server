@@ -7,7 +7,7 @@ function seedPermissions() {
   return prisma.permissions.createMany({
     data: [
       { name: 'Dashboard', route: '/dashboard' },
-      { name: 'Contratos', route: '/contracts' },
+      { name: 'Regua', route: '/auth/regua' },
       { name: 'Pessoa', route: '/manage/persons' },
       { name: 'Dívida', route: '/manage/dividas' },
       { name: 'Securitizadora', route: '/manage/securitization' },
