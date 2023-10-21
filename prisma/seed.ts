@@ -122,6 +122,17 @@ function seedStatusParcela() {
   });
 }
 
+function seedRegua() {
+  return prisma.reguas.create({
+    data: {
+      name: 'Régua Padrão',
+      license_id: 1,
+      tipo_regua: 'cobranca',
+      active: true,
+    },
+  });
+}
+
 async function main() {
   await seedPermissions();
   await seedRoles();
@@ -131,6 +142,7 @@ async function main() {
   await seedUsers();
   await seedTipoGarantia();
   await seedStatusParcela();
+  await seedRegua();
 }
 
 main()
