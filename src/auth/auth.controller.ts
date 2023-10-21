@@ -18,8 +18,6 @@ export class AuthController {
 
   @Get('me')
   async getMe(@Headers('Authorization') access_token: string, @Query('include') include: string[]): Promise<any> {
-    access_token = access_token.slice(7);
-
     return await this.authService.getMe(access_token, include);
   }
 }

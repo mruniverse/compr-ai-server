@@ -15,6 +15,8 @@ import { RamosModule } from './ramos/ramos.module';
 import { DividasModule } from './dividas/dividas.module';
 import { TipoOperacaoModule } from './tipo-operacao/tipo-operacao.module';
 import { IndicesModule } from './indices/indices.module';
+import { ReguaModule } from './reguas/reguas.module';
+import { FasesReguaModule } from './fases-regua/fases-regua.module';
 
 @Module({
   imports: [
@@ -34,6 +36,8 @@ import { IndicesModule } from './indices/indices.module';
     DividasModule,
     TipoOperacaoModule,
     IndicesModule,
+    ReguaModule,
+    FasesReguaModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],

@@ -16,7 +16,8 @@ model Licenses {
   updated_at     DateTime? @updatedAt
 
   Users  Users[]
-  Person Persons @relation(fields: [responsible_id], references: [id])
+  Regua  Reguas[]
+  Person Persons  @relation(fields: [responsible_id], references: [id])
 }
 
 model Persons {
@@ -149,11 +150,12 @@ model Dividas {
   created_at             DateTime? @default(now())
   updated_at             DateTime? @updatedAt
 
-  Credor         Persons          @relation("CredorToDivida", fields: [credor_id], references: [id])
-  Devedor        Persons          @relation("DevedorToDivida", fields: [devedor_id], references: [id])
-  TipoGarantia   TipoGarantia?    @relation(fields: [tipo_garantia_id], references: [id])
-  TiposOperacoes TiposOperacoes[]
-  Indices        Indices[]
+  Credor            Persons             @relation("CredorToDivida", fields: [credor_id], references: [id])
+  Devedor           Persons             @relation("DevedorToDivida", fields: [devedor_id], references: [id])
+  TipoGarantia      TipoGarantia?       @relation(fields: [tipo_garantia_id], references: [id])
+  TiposOperacoes    TiposOperacoes[]
+  Indices           Indices[]
+  StatusFaseDividas StatusFaseDividas[]
 }
 
 model Indices {
@@ -339,4 +341,49 @@ model Duplicata {
   ParcelasOperacao  ParcelasOperacao @relation(fields: [parcela_id], references: [id])
   EmitenteDuplicata Persons          @relation("EmitenteDuplicata", fields: [emitente_duplicata_id], references: [id])
   Sacado            Persons          @relation("SacadoDuplicata", fields: [sacado_id], references: [id])
+}
+
+model Reguas {
+  id         Int @id @default(autoincrement())
+  license_id Int
+
+  tipo_regua String  @default("cobranca")
+  name       String
+  active     Boolean @default(false)
+
+  created_at DateTime? @default(now())
+  updated_at DateTime? @updatedAt
+
+  StatusFaseDividas StatusFaseDividas[]
+  FasesRegua        FasesRegua[]
+  License           Licenses            @relation(fields: [license_id], references: [id])
+}
+
+model FasesRegua {
+  id       Int     @id @default(autoincrement())
+  regua_id Int
+  fase     String
+  cron     String
+  mensagem String?
+  duracao  Int
+  inicio   Int
+  active   Boolean @default(false)
+
+  created_at DateTime? @default(now())
+  updated_at DateTime? @updatedAt
+
+  Regua Reguas @relation(fields: [regua_id], references: [id])
+}
+
+model StatusFaseDividas {
+  id        Int     @id @default(autoincrement())
+  divida_id Int
+  regua_id  Int
+  active    Boolean @default(false)
+
+  created_at DateTime? @default(now())
+  updated_at DateTime? @updatedAt
+
+  Divida Dividas @relation(fields: [divida_id], references: [id])
+  Regua  Reguas  @relation(fields: [regua_id], references: [id])
 }

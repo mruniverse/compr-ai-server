@@ -1,3 +1,4 @@
+import { Users } from '@prisma/client';
 import { UsersService } from './../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
@@ -23,9 +24,9 @@ export class AuthService {
     return { access_token: await this.jwtService.signAsync(payload), expires_in: 86400 };
   }
 
-  async getMe(access_token: string, include: string[]): Promise<any> {
+  async getMe(access_token: string, include?: string[]): Promise<Users> {
     try {
-      const payload: any = await this.jwtService.verifyAsync(access_token);
+      const payload: any = await this.jwtService.verifyAsync(access_token.slice(7));
 
       if (include?.includes('permissions')) {
         return await this.users.findUniqueWithPermissions({ id: payload.id });
