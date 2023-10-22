@@ -335,8 +335,9 @@ CREATE TABLE `FasesRegua` (
 CREATE TABLE `StatusFaseDividas` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `divida_id` INTEGER NOT NULL,
-    `regua_id` INTEGER NOT NULL,
+    `fase_id` INTEGER NOT NULL,
     `active` BOOLEAN NOT NULL DEFAULT false,
+    `isCronActive` BOOLEAN NOT NULL DEFAULT false,
     `created_at` DATETIME(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NULL,
 
@@ -533,16 +534,16 @@ ALTER TABLE `Duplicata` ADD CONSTRAINT `Duplicata_emitente_duplicata_id_fkey` FO
 ALTER TABLE `Duplicata` ADD CONSTRAINT `Duplicata_sacado_id_fkey` FOREIGN KEY (`sacado_id`) REFERENCES `Persons`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Reguas` ADD CONSTRAINT `Reguas_license_id_fkey` FOREIGN KEY (`license_id`) REFERENCES `Licenses`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Reguas` ADD CONSTRAINT `Reguas_license_id_fkey` FOREIGN KEY (`license_id`) REFERENCES `Licenses`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `FasesRegua` ADD CONSTRAINT `FasesRegua_regua_id_fkey` FOREIGN KEY (`regua_id`) REFERENCES `Reguas`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `FasesRegua` ADD CONSTRAINT `FasesRegua_regua_id_fkey` FOREIGN KEY (`regua_id`) REFERENCES `Reguas`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `StatusFaseDividas` ADD CONSTRAINT `StatusFaseDividas_divida_id_fkey` FOREIGN KEY (`divida_id`) REFERENCES `Dividas`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `StatusFaseDividas` ADD CONSTRAINT `StatusFaseDividas_divida_id_fkey` FOREIGN KEY (`divida_id`) REFERENCES `Dividas`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `StatusFaseDividas` ADD CONSTRAINT `StatusFaseDividas_regua_id_fkey` FOREIGN KEY (`regua_id`) REFERENCES `Reguas`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `StatusFaseDividas` ADD CONSTRAINT `StatusFaseDividas_fase_id_fkey` FOREIGN KEY (`fase_id`) REFERENCES `FasesRegua`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `_PermissionsToRoles` ADD CONSTRAINT `_PermissionsToRoles_A_fkey` FOREIGN KEY (`A`) REFERENCES `Permissions`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
