@@ -46,7 +46,6 @@ export class TasksService {
       const vencidoCriado = diffInDaysFromCreated + fase.FaseRegua.inicio <= 0;
       const ativo = fase.active;
       if (vencido && vencidoCriado && !ativo) {
-        console.log('entrou');
         await this.prisma.statusFaseDividas.update({ where: { id: fase.id }, data: { active: true } });
         this.registerCron(fase, fase.FaseRegua.cron, fase.Divida.Devedor.phone, fase.FaseRegua.mensagem);
       }
@@ -81,7 +80,7 @@ export class TasksService {
       text: message,
     });
 
-    return this.http.post(url, body, { headers });
+    this.http.post(url, body, { headers }).subscribe();
   }
 
   async sendEmail(message: string, email: string) {
