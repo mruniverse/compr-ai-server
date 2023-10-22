@@ -1,3 +1,4 @@
+import { MailerService } from '@nestjs-modules/mailer';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
 import { Cron, SchedulerRegistry } from '@nestjs/schedule';
@@ -6,7 +7,12 @@ import { HttpService } from '@nestjs/axios';
 
 @Injectable()
 export class TasksService {
-  constructor(private prisma: PrismaService, private schedulerRegistry: SchedulerRegistry, private http: HttpService) {}
+  constructor(
+    private prisma: PrismaService,
+    private schedulerRegistry: SchedulerRegistry,
+    private http: HttpService,
+    private mailerService: MailerService,
+  ) {}
 
   @Cron('* * * * *')
   async handleCron() {
@@ -53,6 +59,9 @@ export class TasksService {
         case 'whatsapp':
           this.sendWhatsapp(number, message);
           break;
+        case 'email':
+          this.sendEmail(message, fase.Divida.Devedor.email);
+          break;
       }
     });
 
@@ -68,16 +77,19 @@ export class TasksService {
     };
     const body = JSON.stringify({
       session: 'whatsapp',
-      number: number.match(/\d+/g)?.join(''),
+      number: `55${number.match(/\d+/g)?.join('')}`,
       text: message,
     });
 
-    this.http.post(url, body, { headers }).subscribe((res) => {
-      console.log(res);
-    });
+    return this.http.post(url, body, { headers });
   }
 
-  sendEmail() {
-    
+  async sendEmail(message: string, email: string) {
+    return await this.mailerService.sendMail({
+      to: email,
+      from: 'atendimento@legisonline.com.br',
+      subject: 'A3 Recovery - Cobrança',
+      text: message,
+    });
   }
 }

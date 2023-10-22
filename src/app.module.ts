@@ -20,6 +20,7 @@ import { FasesReguaModule } from './fases-regua/fases-regua.module';
 import { StatusFaseDividasModule } from './status-fase-dividas/status-fase-dividas.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TasksModule } from './tasks/tasks.module';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { TasksModule } from './tasks/tasks.module';
     FasesReguaModule,
     StatusFaseDividasModule,
     TasksModule,
+    MailModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
