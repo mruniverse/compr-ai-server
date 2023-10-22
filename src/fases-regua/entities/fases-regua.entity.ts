@@ -1,9 +1,1 @@
-export class FasesRegua {
-  TELEFONIA: 'telefonia';
-  WHATSAPP: 'whatsapp';
-  SMS: 'sms';
-  EMAIL: 'email';
-  SERASA: 'serasa';
-  PROTESTO: 'protesto';
-  NEGOCIACAO: 'negociacao';
-}
+export type FasesRegua = 'telefonia' | 'whatsapp' | 'sms' | 'email' | 'serasa' | 'protesto' | 'negociacao';

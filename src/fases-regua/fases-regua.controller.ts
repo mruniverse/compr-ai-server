@@ -17,6 +17,11 @@ export class FasesReguaController {
     return this.fasesReguaService.findAll();
   }
 
+  @Get('regua/:id')
+  findAllFromRegua(@Param('id') id: string) {
+    return this.fasesReguaService.findAllFromRegua(+id);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.fasesReguaService.findOne(+id);

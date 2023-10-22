@@ -8,6 +8,7 @@ export default class EnderecosDto {
   cep: string;
 
   @IsInt()
+  @IsOptional()
   person_id: number;
 
   @IsOptional()

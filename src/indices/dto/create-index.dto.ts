@@ -1,4 +1,4 @@
-import { IsNumber, IsString, IsOptional, IsNumberString } from 'class-validator';
+import { IsNumber, IsString, IsOptional } from 'class-validator';
 export class CreateIndexDto {
   @IsOptional()
   @IsNumber()
@@ -7,7 +7,7 @@ export class CreateIndexDto {
   @IsString()
   nome: string;
 
-  @IsNumberString()
+  @IsNumber()
   valor: number;
 
   @IsString()

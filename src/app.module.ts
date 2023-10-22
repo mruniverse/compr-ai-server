@@ -17,16 +17,20 @@ import { TipoOperacaoModule } from './tipo-operacao/tipo-operacao.module';
 import { IndicesModule } from './indices/indices.module';
 import { ReguaModule } from './reguas/reguas.module';
 import { FasesReguaModule } from './fases-regua/fases-regua.module';
+import { StatusFaseDividasModule } from './status-fase-dividas/status-fase-dividas.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { TasksModule } from './tasks/tasks.module';
 
 @Module({
   imports: [
-    AuthModule,
-    UsersModule,
-    PrismaModule,
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       envFilePath: ['.env'],
       isGlobal: true,
     }),
+    AuthModule,
+    UsersModule,
+    PrismaModule,
     LicensesModule,
     PersonsModule,
     PermissionsModule,
@@ -38,6 +42,8 @@ import { FasesReguaModule } from './fases-regua/fases-regua.module';
     IndicesModule,
     ReguaModule,
     FasesReguaModule,
+    StatusFaseDividasModule,
+    TasksModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],

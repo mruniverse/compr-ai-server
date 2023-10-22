@@ -64,11 +64,21 @@ export class DividasService {
     return newDivida;
   }
 
-  create(createDividaDto: CreateDividaDto) {
+  async create(createDividaDto: CreateDividaDto) {
     const newDivida = this.remapDivida(createDividaDto);
+    const fasesReguas = await this.prisma.fasesRegua.findMany();
+
     return this.prisma.dividas.create({
       data: {
         ...newDivida,
+        StatusFaseDividas: {
+          createMany: {
+            data: fasesReguas.map((fase) => ({
+              fase_id: fase.id,
+              active: fase.active,
+            })),
+          },
+        },
       },
     });
   }
@@ -102,6 +112,7 @@ export class DividasService {
             name: true,
           },
         },
+        StatusFaseDividas: true,
       },
     });
   }

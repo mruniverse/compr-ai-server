@@ -354,9 +354,8 @@ model Reguas {
   created_at DateTime? @default(now())
   updated_at DateTime? @updatedAt
 
-  StatusFaseDividas StatusFaseDividas[]
-  FasesRegua        FasesRegua[]
-  License           Licenses            @relation(fields: [license_id], references: [id])
+  FasesRegua FasesRegua[]
+  License    Licenses     @relation(fields: [license_id], references: [id], onDelete: Cascade)
 }
 
 model FasesRegua {
@@ -372,18 +371,20 @@ model FasesRegua {
   created_at DateTime? @default(now())
   updated_at DateTime? @updatedAt
 
-  Regua Reguas @relation(fields: [regua_id], references: [id])
+  StatusFaseDividas StatusFaseDividas[]
+  Regua             Reguas              @relation(fields: [regua_id], references: [id], onDelete: Cascade)
 }
 
 model StatusFaseDividas {
-  id        Int     @id @default(autoincrement())
-  divida_id Int
-  regua_id  Int
-  active    Boolean @default(false)
+  id           Int     @id @default(autoincrement())
+  divida_id    Int
+  fase_id      Int
+  active       Boolean @default(false)
+  isCronActive Boolean @default(false)
 
   created_at DateTime? @default(now())
   updated_at DateTime? @updatedAt
 
-  Divida Dividas @relation(fields: [divida_id], references: [id])
-  Regua  Reguas  @relation(fields: [regua_id], references: [id])
+  Divida    Dividas    @relation(fields: [divida_id], references: [id], onDelete: Cascade)
+  FaseRegua FasesRegua @relation(fields: [fase_id], references: [id], onDelete: Cascade)
 }

@@ -7,12 +7,34 @@ import { UpdateFasesReguaDto } from './dto/update-fases-regua.dto';
 export class FasesReguaService {
   constructor(private prisma: PrismaService) {}
 
-  create(createFasesReguaDto: CreateFasesReguaDto) {
-    return this.prisma.fasesRegua.create({ data: createFasesReguaDto });
+  async create(createFasesReguaDto: CreateFasesReguaDto) {
+    const dividas = await this.prisma.dividas.findMany();
+
+    return this.prisma.fasesRegua.create({
+      data: {
+        ...createFasesReguaDto,
+        StatusFaseDividas: {
+          createMany: {
+            data: dividas.map((divida) => ({
+              divida_id: divida.id,
+              active: createFasesReguaDto.active,
+            })),
+          },
+        },
+      },
+    });
   }
 
   findAll() {
     return this.prisma.fasesRegua.findMany();
+  }
+
+  findAllFromRegua(id: number) {
+    return this.prisma.fasesRegua.findMany({
+      where: {
+        regua_id: id,
+      },
+    });
   }
 
   findOne(id: number) {

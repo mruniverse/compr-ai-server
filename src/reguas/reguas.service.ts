@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import { PrismaService } from './../prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
 import { CreateReguaDto } from './dto/create-regua.dto';
@@ -16,8 +17,8 @@ export class ReguaService {
     });
   }
 
-  findAll() {
-    return this.prisma.reguas.findMany();
+  findAll(include?: Prisma.ReguasInclude) {
+    return this.prisma.reguas.findMany({ include });
   }
 
   findActive() {

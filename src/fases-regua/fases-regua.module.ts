@@ -7,5 +7,6 @@ import { FasesReguaController } from './fases-regua.controller';
   imports: [PrismaModule],
   controllers: [FasesReguaController],
   providers: [FasesReguaService],
+  exports: [FasesReguaService],
 })
 export class FasesReguaModule {}

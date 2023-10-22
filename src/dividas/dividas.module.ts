@@ -7,5 +7,6 @@ import { DividasController } from './dividas.controller';
   imports: [PrismaModule],
   controllers: [DividasController],
   providers: [DividasService],
+  exports: [DividasService],
 })
 export class DividasModule {}
