@@ -20,13 +20,13 @@ export class CredilinkController {
 
   @Get(':cpfcnpj')
   async findOne(@Res() response: Response, @Param('cpfcnpj') cpfcnpj: string) {
-    return this.credilinkService
+    this.credilinkService
       .findOne(cpfcnpj)
-      .catch((err) => {
-        return response.status(400).json({ error: err });
-      })
       .then((result) => {
         return response.status(200).json(result);
+      })
+      .catch((err) => {
+        return response.status(400).json({ error: err });
       });
   }
 

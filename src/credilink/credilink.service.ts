@@ -22,7 +22,7 @@ export class CredilinkService {
     const person = await this.prisma.persons.findUnique({ where: { cpf_cnpj: cpfcnpj }, include: { Enderecos: true } });
     if (person) return person;
 
-    const credilinkPerson: Registro = await new Promise((resolve, reject) => {
+    return await new Promise((resolve, reject) => {
       this.credilink.Cpfcnpj(
         {
           usuario: 'INTLEGIS',
@@ -31,19 +31,17 @@ export class CredilinkService {
           cpfcnpj: cpfcnpj,
         },
         (err: any, result: any) => {
-          if (err) reject(err);
+          if (err) return reject(err);
 
           parseString(result.return, (err: any, result: CpfcnpjResponse) => {
-            if (err) reject(err);
-            if (result.RESULTADO.MSG) reject(result.RESULTADO.MSG[0]);
+            if (err) return reject(err);
+            if (result.RESULTADO.MSG) return reject(result.RESULTADO.MSG[0]);
 
-            resolve(result.RESULTADO.REGISTRO[0]);
+            return resolve(result.RESULTADO.REGISTRO[0]);
           });
         },
       );
-    });
-
-    return this.formatCrediLinkResponse(credilinkPerson);
+    }).then((result) => this.formatCrediLinkResponse(result as Registro));
   }
 
   formatCrediLinkResponse(registro: Registro): Partial<Persons> & { enderecos: Partial<Enderecos[]> } {
@@ -58,7 +56,7 @@ export class CredilinkService {
     if (registro.EMAILS[0] !== 'NULL') persons.email = registro.EMAILS[0];
     if (registro.TELEFONE[0] !== 'NULL') persons.phone = registro.TELEFONE[0];
     if (registro.NASC[0] !== 'NULL') persons.nascimento = new Date(nascYear, nascMonth - 1, nascDay);
-    if (registro.SEXO[0] !== 'NULL') persons.sexo = registro.SEXO[0] === 'M' ? 'Masculino' : 'Feminino';
+    if (registro.SEXO[0] !== 'NULL') persons.sexo = registro.SEXO[0] === 'M' ? 'masculino' : 'feminino';
 
     enderecos.forEach((endereco, index) => {
       if (registro.ENDERECO[index] !== 'NULL') endereco.logradouro = registro.ENDERECO[index];
