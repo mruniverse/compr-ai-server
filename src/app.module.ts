@@ -21,6 +21,9 @@ import { StatusFaseDividasModule } from './status-fase-dividas/status-fase-divid
 import { ScheduleModule } from '@nestjs/schedule';
 import { TasksModule } from './tasks/tasks.module';
 import { MailModule } from './mail/mail.module';
+import { CredilinkModule } from './credilink/credilink.module';
+import { HttpService } from './http/http.service';
+import { HttpModule } from './http/http.module';
 
 @Module({
   imports: [
@@ -46,8 +49,10 @@ import { MailModule } from './mail/mail.module';
     StatusFaseDividasModule,
     TasksModule,
     MailModule,
+    CredilinkModule,
+    HttpModule,
   ],
   controllers: [AppController],
-  providers: [AppService, PrismaService],
+  providers: [AppService, PrismaService, HttpService],
 })
 export class AppModule {}
