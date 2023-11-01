@@ -11,6 +11,7 @@ export class LicensesService {
 
   async findWhereAllowed(loggedUser: Users): Promise<Prisma.LicensesWhereInput> {
     if (!loggedUser.license_id) throw new Error('Usuário sem credenciais');
+    if (loggedUser.role_id === 1) return {};
 
     const where: Prisma.LicensesWhereInput = {
       id: {
