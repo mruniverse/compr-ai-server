@@ -20,7 +20,7 @@ export class DividasController {
   constructor(private readonly dividasService: DividasService) {}
 
   @Post()
-  create(@Body() createDividaDto: CreateDividaDto) {
+  create(@Request() request: Request & { user: Users }, @Body() createDividaDto: CreateDividaDto) {
     if (createDividaDto.credor_id == createDividaDto.devedor_id) {
       throw new BadRequestException('Credor e devedor não podem ser os mesmos');
     }
@@ -28,7 +28,7 @@ export class DividasController {
     delete createDividaDto.documento_contratual;
     delete createDividaDto.TiposOperacoes;
 
-    return this.dividasService.create(createDividaDto);
+    return this.dividasService.create(createDividaDto, request.user.license_id);
   }
 
   @Post('vencimento')

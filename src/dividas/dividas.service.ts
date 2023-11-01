@@ -13,7 +13,7 @@ export class DividasService {
     if (loggedUser.role_id === 1) return {};
 
     const where: Prisma.DividasWhereInput = {
-      id: {
+      license_id: {
         equals: loggedUser.license_id,
       },
     };
@@ -77,13 +77,14 @@ export class DividasService {
     return newDivida;
   }
 
-  async create(createDividaDto: CreateDividaDto) {
+  async create(createDividaDto: CreateDividaDto, license_id: number) {
     const newDivida = this.remapDivida(createDividaDto);
     const fasesReguas = await this.prisma.fasesRegua.findMany();
 
     return this.prisma.dividas.create({
       data: {
         ...newDivida,
+        license_id,
         StatusFaseDividas: {
           createMany: {
             data: fasesReguas.map((fase) => ({
