@@ -1,4 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, BadRequestException } from '@nestjs/common';
+import { Users, Prisma } from '@prisma/client';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Request,
+  BadRequestException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { DividasService } from './dividas.service';
 import { CreateDividaDto } from './dto/create-divida.dto';
 import { UpdateDividaDto } from './dto/update-divida.dto';
@@ -25,8 +37,15 @@ export class DividasController {
   }
 
   @Get()
-  findAll() {
-    return this.dividasService.findAll();
+  async findAll(@Request() request: Request & { user: Users }) {
+    let where: Prisma.DividasWhereInput = {};
+    try {
+      where = await this.dividasService.findWhereAllowed(request.user);
+    } catch (error) {
+      throw new UnauthorizedException(error.message);
+    }
+
+    return this.dividasService.findAll(where);
   }
 
   @Get(':id')

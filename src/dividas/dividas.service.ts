@@ -2,11 +2,24 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
 import { CreateDividaDto } from './dto/create-divida.dto';
 import { UpdateDividaDto } from './dto/update-divida.dto';
-import { Prisma } from '@prisma/client';
+import { Prisma, Users } from '@prisma/client';
 
 @Injectable()
 export class DividasService {
   constructor(private prisma: PrismaService) {}
+
+  async findWhereAllowed(loggedUser: Users): Promise<Prisma.DividasWhereInput> {
+    if (!loggedUser.license_id) throw new Error('Usuário sem credenciais');
+    if (loggedUser.role_id === 1) return {};
+
+    const where: Prisma.DividasWhereInput = {
+      id: {
+        equals: loggedUser.license_id,
+      },
+    };
+
+    return where;
+  }
 
   private remapDivida(divida: CreateDividaDto) {
     let newDivida: Prisma.DividasCreateInput;
@@ -94,8 +107,9 @@ export class DividasService {
     });
   }
 
-  findAll() {
+  findAll(where: Prisma.DividasWhereInput = {}) {
     return this.prisma.dividas.findMany({
+      where,
       include: {
         Credor: {
           include: {
