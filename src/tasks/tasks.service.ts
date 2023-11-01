@@ -58,7 +58,13 @@ export class TasksService {
 
   registerCron(fase: any, cron: string, message: string) {
     const job = new CronJob(cron, () => {
-      console.log('executando cron', fase.active, fase.FaseRegua.active, fase.FaseRegua.fase);
+      console.log(
+        'executando cron',
+        fase.Divida.Devedor.phone,
+        fase.active,
+        fase.FaseRegua.active,
+        fase.FaseRegua.fase,
+      );
       if (fase.active && fase.FaseRegua.active) {
         switch (fase.FaseRegua.fase) {
           case 'whatsapp':
