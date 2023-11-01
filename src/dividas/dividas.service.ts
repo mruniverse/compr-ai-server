@@ -2,7 +2,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
 import { CreateDividaDto } from './dto/create-divida.dto';
 import { UpdateDividaDto } from './dto/update-divida.dto';
-import { Prisma, Users, Licenses } from '@prisma/client';
+import { Prisma, Users } from '@prisma/client';
 
 @Injectable()
 export class DividasService {
@@ -84,7 +84,7 @@ export class DividasService {
     return this.prisma.dividas.create({
       data: {
         ...newDivida,
-        Licenses: {
+        License: {
           connect: {
             id: license_id,
           },
