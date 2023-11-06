@@ -43,44 +43,54 @@ export class TasksService {
       );
 
       try {
-        this.schedulerRegistry.getCronJob(this.getCronJobName(fase));
+        this.schedulerRegistry.getCronJob(this.getCronJobName(fase.id, fase.FaseRegua.id));
       } catch (error) {
         const vencido = diffInDaysFromVencimento + fase.FaseRegua.inicio <= 0;
         const vencidoCriado = diffInDaysFromCreated + fase.FaseRegua.inicio <= 0;
 
         if (vencido && vencidoCriado) {
           await this.prisma.statusFaseDividas.update({ where: { id: fase.id }, data: { active: true } });
-          this.registerCron(fase, fase.FaseRegua.cron, fase.FaseRegua.mensagem);
+          this.registerCron(fase.id, fase.FaseRegua.id, fase.FaseRegua.cron);
         }
       }
     });
   }
 
-  registerCron(fase: any, cron: string, message: string) {
-    const job = new CronJob(cron, () => {
-      console.log('executando cron', fase.active, fase.FaseRegua.active, fase.FaseRegua.fase);
-      if (fase.active && fase.FaseRegua.active) {
-        switch (fase.FaseRegua.fase) {
+  registerCron(statusFaseDividaId: number, faseReguaId: number, cron: string) {
+    const job = new CronJob(cron, async () => {
+      const statusFaseDivida = await this.getStatusFaseDivida(statusFaseDividaId);
+      const statusDividaActive = statusFaseDivida.active;
+      const statusReguaActive = statusFaseDivida.FaseRegua.active;
+      const faseName = statusFaseDivida.FaseRegua.fase;
+      const message = statusFaseDivida.FaseRegua.mensagem;
+      const phone = statusFaseDivida.Divida.Devedor.phone;
+      const email = statusFaseDivida.Divida.Devedor.email;
+
+      if (statusDividaActive && statusReguaActive) {
+        switch (faseName) {
           case 'whatsapp':
-            this.sendWhatsapp(fase.Divida.Devedor.phone, message);
+            this.sendWhatsapp(phone, message);
             break;
           case 'email':
-            this.sendEmail(message, fase.Divida.Devedor.email);
+            this.sendEmail(message, email);
+            break;
+          default:
+            console.log('Nenhuma ação para ser executada');
             break;
         }
       }
     });
 
-    this.schedulerRegistry.addCronJob(this.getCronJobName(fase), job);
+    this.schedulerRegistry.addCronJob(this.getCronJobName(statusFaseDividaId, faseReguaId), job);
     job.start();
   }
 
-  getCronJobName(fase: any) {
-    return `${fase.Divida.id}-${fase.id}`;
+  getCronJobName(faseDividaId: number, faseReguaId: number) {
+    return `${faseDividaId}-${faseReguaId}`;
   }
 
   sendWhatsapp(number: string, message: string) {
-    console.log('enviando whatsapp', number);
+    console.log(`Enviando mensagem para ${number}`);
 
     const url = `http://149.100.154.223:3033/sendText`;
     const headers = {
@@ -97,13 +107,38 @@ export class TasksService {
   }
 
   async sendEmail(message: string, email: string) {
-    return await this.mailerService
-      .sendMail({
+    console.log(`Enviando email para ${email}`);
+
+    try {
+      return await this.mailerService.sendMail({
         to: email,
         from: 'atendimento@legisonline.com.br',
         subject: 'A3 Recovery - Cobrança',
         text: message,
-      })
-      .catch((err) => console.log(err));
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  async getStatusFaseDivida(statusFaseDividaId: number) {
+    return await this.prisma.statusFaseDividas.findFirst({
+      where: { id: statusFaseDividaId },
+      include: {
+        FaseRegua: true,
+        Divida: {
+          select: {
+            data_vencimento: true,
+            created_at: true,
+            Devedor: {
+              select: {
+                email: true,
+                phone: true,
+              },
+            },
+          },
+        },
+      },
+    });
   }
 }
