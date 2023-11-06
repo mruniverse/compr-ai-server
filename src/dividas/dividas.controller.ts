@@ -1,4 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, BadRequestException } from '@nestjs/common';
+import { Users, Prisma } from '@prisma/client';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Request,
+  BadRequestException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { DividasService } from './dividas.service';
 import { CreateDividaDto } from './dto/create-divida.dto';
 import { UpdateDividaDto } from './dto/update-divida.dto';
@@ -8,7 +20,7 @@ export class DividasController {
   constructor(private readonly dividasService: DividasService) {}
 
   @Post()
-  create(@Body() createDividaDto: CreateDividaDto) {
+  create(@Request() request: Request & { user: Users }, @Body() createDividaDto: CreateDividaDto) {
     if (createDividaDto.credor_id == createDividaDto.devedor_id) {
       throw new BadRequestException('Credor e devedor não podem ser os mesmos');
     }
@@ -16,7 +28,7 @@ export class DividasController {
     delete createDividaDto.documento_contratual;
     delete createDividaDto.TiposOperacoes;
 
-    return this.dividasService.create(createDividaDto);
+    return this.dividasService.create(createDividaDto, request.user.license_id);
   }
 
   @Post('vencimento')
@@ -25,8 +37,15 @@ export class DividasController {
   }
 
   @Get()
-  findAll() {
-    return this.dividasService.findAll();
+  async findAll(@Request() request: Request & { user: Users }) {
+    let where: Prisma.DividasWhereInput = {};
+    try {
+      where = await this.dividasService.findWhereAllowed(request.user);
+    } catch (error) {
+      throw new UnauthorizedException(error.message);
+    }
+
+    return this.dividasService.findAll(where);
   }
 
   @Get(':id')

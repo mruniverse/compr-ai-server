@@ -15,9 +15,10 @@ model Licenses {
   created_at     DateTime? @default(now())
   updated_at     DateTime? @updatedAt
 
-  Users  Users[]
-  Regua  Reguas[]
-  Person Persons  @relation(fields: [responsible_id], references: [id])
+  Users   Users[]
+  Regua   Reguas[]
+  Dividas Dividas[]
+  Person  Persons  @relation(fields: [responsible_id], references: [id])
 }
 
 model Persons {
@@ -133,6 +134,7 @@ model Roles {
 
 model Dividas {
   id                     Int       @id @default(autoincrement())
+  license_id             Int       @default(1)
   credor_id              Int
   devedor_id             Int
   tipo_garantia_id       Int?
@@ -150,6 +152,7 @@ model Dividas {
   created_at             DateTime? @default(now())
   updated_at             DateTime? @updatedAt
 
+  License           Licenses            @relation(fields: [license_id], references: [id], onDelete: Cascade)
   Credor            Persons             @relation("CredorToDivida", fields: [credor_id], references: [id])
   Devedor           Persons             @relation("DevedorToDivida", fields: [devedor_id], references: [id])
   TipoGarantia      TipoGarantia?       @relation(fields: [tipo_garantia_id], references: [id])
