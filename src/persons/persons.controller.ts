@@ -55,8 +55,8 @@ export class PersonsController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    const person = this.persons.findOne(+id);
+  async remove(@Param('id') id: string) {
+    const person = await this.persons.findOne(+id);
     if (!person) throw new NotFoundException('Pessoa não encontrada');
 
     const hasLicese = person.License;
