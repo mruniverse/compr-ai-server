@@ -96,7 +96,16 @@ export class PersonsService {
   }
 
   findOne(id: number) {
-    return this.prisma.persons.findUnique({ where: { id } });
+    return this.prisma.persons.findUnique({
+      where: { id },
+      include: {
+        License: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
   }
 
   update(id: number, updatePersonDto: UpdatePersonDto) {

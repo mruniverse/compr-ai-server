@@ -84,7 +84,7 @@ model Enderecos {
   created_at DateTime? @default(now())
   updated_at DateTime? @updatedAt
 
-  Person Persons @relation(fields: [person_id], references: [id])
+  Person Persons @relation(fields: [person_id], references: [id], onDelete: Cascade)
 }
 
 model Ramos {
