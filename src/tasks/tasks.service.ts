@@ -21,6 +21,7 @@ export class TasksService {
         FaseRegua: true,
         Divida: {
           select: {
+            id: true,
             data_vencimento: true,
             created_at: true,
             Devedor: {
@@ -49,6 +50,7 @@ export class TasksService {
         const vencidoCriado = diffInDaysFromCreated + fase.FaseRegua.inicio <= 0;
 
         if (vencido && vencidoCriado) {
+          console.log(`Registrando cron para ${fase.FaseRegua.fase} da dívida ${fase.Divida.id}`);
           await this.prisma.statusFaseDividas.update({ where: { id: fase.id }, data: { active: true } });
           this.registerCron(fase.id, fase.FaseRegua.id, fase.FaseRegua.cron);
         }
@@ -59,6 +61,8 @@ export class TasksService {
   registerCron(statusFaseDividaId: number, faseReguaId: number, cron: string) {
     const job = new CronJob(cron, async () => {
       const statusFaseDivida = await this.getStatusFaseDivida(statusFaseDividaId);
+      if (!statusFaseDivida) return console.log('StatusFaseDivida não encontrado');
+
       const statusDividaActive = statusFaseDivida.active;
       const statusReguaActive = statusFaseDivida.FaseRegua.active;
       const faseName = statusFaseDivida.FaseRegua.fase;
@@ -122,7 +126,7 @@ export class TasksService {
   }
 
   async getStatusFaseDivida(statusFaseDividaId: number) {
-    return await this.prisma.statusFaseDividas.findFirst({
+    return this.prisma.statusFaseDividas.findFirst({
       where: { id: statusFaseDividaId },
       include: {
         FaseRegua: true,
