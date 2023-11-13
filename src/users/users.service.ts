@@ -3,7 +3,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from './../prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
-import { Prisma, Users, Licenses } from '@prisma/client';
+import { Prisma, Users } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { PermissionsService } from 'src/permissions/permissions.service';
 

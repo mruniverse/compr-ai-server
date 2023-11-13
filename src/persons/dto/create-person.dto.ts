@@ -40,7 +40,7 @@ export default class CreatePersonDto {
   @IsString()
   cpf_cnpj: string;
 
-  @IsEmail()
+  @IsString()
   email: string;
 
   @IsOptional()

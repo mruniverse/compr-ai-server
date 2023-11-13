@@ -1,5 +1,5 @@
+import { PrismaService } from './../prisma/prisma.service';
 import { Users, Prisma } from '@prisma/client';
-import { LicensesService } from './../licenses/licenses.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UsersService } from './users.service';
 import {
@@ -19,11 +19,11 @@ import {
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly users: UsersService, private readonly licenses: LicensesService) {}
+  constructor(private readonly users: UsersService, private prisma: PrismaService) {}
 
   @Post()
   async create(@Body() user: CreateUserDto) {
-    const license = await this.licenses.findOne({ id: user.license_id });
+    const license = await this.prisma.licenses.findFirst({ where: { id: user.license_id }, include: { Users: true } });
     if (!license) throw new NotFoundException('Licença não encontrada');
 
     const existingUser = await this.users.findUniqueByEmail(user.email);
