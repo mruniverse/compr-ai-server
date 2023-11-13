@@ -98,7 +98,7 @@ export class PersonsService {
   findOne(id: number) {
     return this.prisma.persons.findUnique({
       where: { id },
-      include: {  
+      include: {
         License: {
           select: {
             id: true,
