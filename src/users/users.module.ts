@@ -1,11 +1,10 @@
-import { PermissionsModule } from './../permissions/permissions.module';
 import { PrismaModule } from './../prisma/prisma.module';
 import { Module } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 
 @Module({
-  imports: [PrismaModule, PermissionsModule],
+  imports: [PrismaModule],
   providers: [UsersService],
   exports: [UsersService],
   controllers: [UsersController],

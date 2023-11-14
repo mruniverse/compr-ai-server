@@ -56,6 +56,10 @@ export class RolesService {
     return `This action returns a #${id} role`;
   }
 
+  roleExists(name: string) {
+    return this.prisma.roles.findFirst({ where: { name } });
+  }
+
   updateWithPermissions(id: number, updateRoleDto: UpdateRoleDto) {
     return this.prisma.roles.update({
       where: { id },

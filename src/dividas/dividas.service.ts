@@ -21,8 +21,8 @@ export class DividasService {
     return where;
   }
 
-  private remapDivida(divida: CreateDividaDto) {
-    let newDivida: Prisma.DividasCreateInput;
+  private addConnectionsToDivida(divida: CreateDividaDto | UpdateDividaDto) {
+    let newDivida: Prisma.DividasCreateInput | Prisma.DividasUpdateInput;
 
     Object.keys(divida).forEach((key) => {
       switch (key) {
@@ -66,6 +66,8 @@ export class DividasService {
             },
           };
           break;
+        case 'TiposOperacoes':
+          break;
         default:
           newDivida = {
             ...newDivida,
@@ -78,7 +80,7 @@ export class DividasService {
   }
 
   async create(createDividaDto: CreateDividaDto, license_id: number) {
-    const newDivida = this.remapDivida(createDividaDto);
+    const newDivida = this.addConnectionsToDivida(createDividaDto) as Prisma.DividasCreateInput;
     const fasesReguas = await this.prisma.fasesRegua.findMany();
 
     return this.prisma.dividas.create({
@@ -132,6 +134,7 @@ export class DividasService {
           },
         },
         StatusFaseDividas: true,
+        Indices: true,
       },
     });
   }
@@ -143,10 +146,11 @@ export class DividasService {
   }
 
   update(id: number, updateDividaDto: UpdateDividaDto) {
+    const newDivida = this.addConnectionsToDivida(updateDividaDto) as Prisma.DividasUpdateInput;
     return this.prisma.dividas.update({
       where: { id },
       data: {
-        ...updateDividaDto,
+        ...newDivida,
       },
     });
   }

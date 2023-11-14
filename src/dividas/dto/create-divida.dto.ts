@@ -1,4 +1,6 @@
-import { IsOptional, IsInt, IsString, IsDateString, IsNumber } from 'class-validator';
+import { Type } from 'class-transformer';
+import { CreateTipoOperacaoDto } from './../../tipo-operacao/dto/create-tipo-operacao.dto';
+import { IsOptional, IsInt, IsString, IsDateString, IsNumber, ValidateNested } from 'class-validator';
 
 export class CreateDividaDto {
   @IsOptional()
@@ -65,5 +67,7 @@ export class CreateDividaDto {
   documento_contratual?: Blob;
 
   @IsOptional()
-  TiposOperacoes?: any;
+  @ValidateNested({ each: true })
+  @Type(() => CreateTipoOperacaoDto)
+  TiposOperacoes?: CreateTipoOperacaoDto;
 }

@@ -58,33 +58,43 @@ export class CreateChequeDto {
   @IsNumber()
   beneficiario_id: number;
 
+  @IsOptional()
   @IsNumber()
   parcela_id: number;
 
+  @IsOptional()
   @IsNumber()
   valor_cheque: number;
 
+  @IsOptional()
   @IsDateString()
   data_emissao: Date;
 
+  @IsOptional()
   @IsDateString()
   data_vencimento: Date;
 
+  @IsOptional()
   @IsString()
   informacoes_conta: string;
 
+  @IsOptional()
   @IsNumber()
   operacao_alinea_devolucao: number;
 
+  @IsOptional()
   @IsNumber()
   numero_cheque: number;
 
+  @IsOptional()
   @IsNumber()
   banco: number;
 
+  @IsOptional()
   @IsNumber()
   agencia: number;
 
+  @IsOptional()
   @IsNumber()
   conta: number;
 }
@@ -96,18 +106,23 @@ export class CreateDuplicataDto {
   @IsNumber()
   sacado_id: number;
 
+  @IsOptional()
   @IsNumber()
   parcela_id: number;
 
+  @IsOptional()
   @IsNumber()
   valor_duplicata: number;
 
+  @IsOptional()
   @IsDateString()
   data_emissao: Date;
 
+  @IsOptional()
   @IsDateString()
   data_vencimento: Date;
 
+  @IsOptional()
   @IsString()
   detalhes_itens_servicos: string;
 }

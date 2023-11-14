@@ -5,11 +5,10 @@ import { PrismaService } from './../prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
 import { Prisma, Users } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
-import { PermissionsService } from 'src/permissions/permissions.service';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService, private permissions: PermissionsService) {}
+  constructor(private prisma: PrismaService) {}
 
   async privateUser(email: string) {
     const user = await this.prisma.users.findUnique({

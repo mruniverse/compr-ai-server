@@ -21,10 +21,10 @@ export class RolesController {
 
   @Post()
   create(@Body() createRoleDto: CreateRoleDto) {
-    if (createRoleDto.permissions) {
-      return this.roles.createWithPermissions(createRoleDto);
-    }
-    return this.roles.create(createRoleDto);
+    if (this.roles.roleExists(createRoleDto.name)) throw new UnauthorizedException('Esse tipo já existe');
+
+    if (createRoleDto.permissions) return this.roles.createWithPermissions(createRoleDto);
+    else return this.roles.create(createRoleDto);
   }
 
   @Get()

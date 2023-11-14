@@ -13,7 +13,23 @@ export class TipoOperacaoService {
     return this.prisma.tiposOperacoes.create({ data: tipoOperacao });
   }
 
-  getTipoOperacaoConnections(createTipoOperacaoDto: CreateTipoOperacaoDto) {
+  findAll() {
+    return `This action returns all tipoOperacao`;
+  }
+
+  findOne(id: number) {
+    return `This action returns a #${id} tipoOperacao`;
+  }
+
+  update(id: number, updateTipoOperacaoDto: UpdateTipoOperacaoDto) {
+    return `This action updates a #${id} tipoOperacao`;
+  }
+
+  remove(id: number) {
+    return `This action removes a #${id} tipoOperacao`;
+  }
+
+  private getTipoOperacaoConnections(createTipoOperacaoDto: CreateTipoOperacaoDto) {
     let tipoOperacao: Prisma.TiposOperacoesCreateInput = {
       Divida: {
         connect: {
@@ -101,21 +117,5 @@ export class TipoOperacaoService {
     }
 
     return tipoOperacao;
-  }
-
-  findAll() {
-    return `This action returns all tipoOperacao`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} tipoOperacao`;
-  }
-
-  update(id: number, updateTipoOperacaoDto: UpdateTipoOperacaoDto) {
-    return `This action updates a #${id} tipoOperacao`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} tipoOperacao`;
   }
 }
