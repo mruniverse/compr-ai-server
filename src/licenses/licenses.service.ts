@@ -42,7 +42,7 @@ export class LicensesService {
       name: responsible.name,
       active: true,
       avatar: '',
-      email: getEmailsFromString(responsible.email)[0],
+      email: getEmailsFromString(responsible.email),
       password: responsible.cpf_cnpj,
       license_id: newLicense.id,
       role_id: 2,
@@ -88,6 +88,6 @@ export class LicensesService {
   }
 
   remove(id: number) {
-    return `This action removes a #${id} license`;
+    return this.prisma.licenses.delete({ where: { id } });
   }
 }

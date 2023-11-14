@@ -1,3 +1,4 @@
+import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from './../prisma/prisma.service';
 import { Users, Prisma } from '@prisma/client';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -48,7 +49,7 @@ export class UsersController {
   }
 
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() user: CreateUserDto, @Request() request: Request & { user: Users }) {
+  async update(@Param('id') id: string, @Body() user: UpdateUserDto, @Request() request: Request & { user: Users }) {
     if (!this.users.findIfCreateOrUpdateAllowed(user, request.user)) throw new UnauthorizedException('Não autorizado');
 
     return this.users.update(+id, user);
@@ -57,6 +58,7 @@ export class UsersController {
   @Delete(':id')
   async remove(@Param('id') id: string, @Request() request: Request & { user: Users }) {
     if (!this.users.findIfDeleteAllowed(+id, request.user)) throw new UnauthorizedException('Não autorizado');
+    if (request.user.id === +id) throw new UnauthorizedException('Não é possível excluir o próprio usuário');
 
     const user = await this.users.findUnique({ id: +id });
     if (!user) throw new NotFoundException('Usuário não encontrado');

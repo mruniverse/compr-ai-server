@@ -36,7 +36,7 @@ export class UsersService {
     return where;
   }
 
-  findIfCreateOrUpdateAllowed(newUser: CreateUserDto, loggedUser: Users): boolean {
+  findIfCreateOrUpdateAllowed(newUser: UpdateUserDto, loggedUser: Users): boolean {
     if (loggedUser.role_id === 1) return true;
 
     const allowLicense = loggedUser.license_id ? loggedUser.license_id === newUser.license_id : true;
