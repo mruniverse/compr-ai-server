@@ -41,13 +41,13 @@ export class CreateTipoOperacaoDto {
   // cartaDeCredito: CartaDeCredito[];
 
   @IsOptional()
-  @ValidateNested({ each: true })
-  @Type(() => CreateChequeDto)
+  // @ValidateNested({ each: true })
+  // @Type(() => CreateChequeDto)
   cheque: CreateChequeDto[];
 
   @IsOptional()
-  @ValidateNested({ each: true })
-  @Type(() => CreateDuplicataDto)
+  // @ValidateNested({ each: true })
+  // @Type(() => CreateDuplicataDto)
   duplicata: CreateDuplicataDto[];
 }
 
