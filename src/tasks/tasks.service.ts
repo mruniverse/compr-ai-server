@@ -112,16 +112,31 @@ export class TasksService {
 
   async sendEmail(message: string, email: string) {
     console.log(`Enviando email para ${email}`);
-
-    try {
-      return await this.mailerService.sendMail({
-        to: email,
-        from: 'atendimento@legisonline.com.br',
-        subject: 'A3 Recovery - Cobrança',
-        text: message,
+    if (!email.includes(',')) {
+      try {
+        return await this.mailerService.sendMail({
+          to: email,
+          from: 'atendimento@legisonline.com.br',
+          subject: 'A3 Recovery - Cobrança',
+          text: message,
+        });
+      } catch (err) {
+        console.log(err);
+      }
+    } else {
+      const emailsArray = email.split(',');
+      emailsArray.forEach(async (email) => {
+        try {
+          return await this.mailerService.sendMail({
+            to: email,
+            from: 'atendimento@legisonline.com.br',
+            subject: 'A3 Recovery - Cobrança',
+            text: message,
+          });
+        } catch (err) {
+          console.log(err);
+        }
       });
-    } catch (err) {
-      console.log(err);
     }
   }
 
