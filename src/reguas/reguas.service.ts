@@ -17,12 +17,12 @@ export class ReguaService {
     });
   }
 
-  findAll(include?: Prisma.ReguasInclude) {
-    return this.prisma.reguas.findMany({ include });
+  findAll(license_id: number, include?: Prisma.ReguasInclude) {
+    return this.prisma.reguas.findMany({ include, where: { license_id } });
   }
 
-  findActive() {
-    return this.prisma.reguas.findFirst({ where: { active: true } });
+  findActive(license_id: number) {
+    return this.prisma.reguas.findFirst({ where: { AND: [{ active: true, license_id }] } });
   }
 
   findOne(id: number) {

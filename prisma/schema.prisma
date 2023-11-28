@@ -11,6 +11,7 @@ generator client {
 model Licenses {
   id             Int       @id @default(autoincrement())
   max_users      Int
+  active         Boolean   @default(true)
   responsible_id Int       @unique
   created_at     DateTime? @default(now())
   updated_at     DateTime? @updatedAt
@@ -18,7 +19,7 @@ model Licenses {
   Users   Users[]
   Regua   Reguas[]
   Dividas Dividas[]
-  Person  Persons  @relation(fields: [responsible_id], references: [id])
+  Person  Persons   @relation(fields: [responsible_id], references: [id])
 }
 
 model Persons {

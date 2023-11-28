@@ -1,3 +1,4 @@
+import { CreateFasesReguaDto } from './../fases-regua/dto/create-fases-regua.dto';
 import { UsersService } from './../users/users.service';
 import { CreateUserDto } from './../users/dto/create-user.dto';
 import { PersonsService } from './../persons/persons.service';
@@ -48,7 +49,40 @@ export class LicensesService {
       role_id: 2,
     };
 
+    await this.newReguaInstance(newLicense.id);
+
     return this.users.create(newUser);
+  }
+
+  private async newReguaInstance(license_id: number) {
+    const reguaPadrao = await this.prisma.reguas.findFirst({
+      where: { active: true, license_id: 1 },
+      include: { FasesRegua: true },
+    });
+    if (!reguaPadrao) throw new NotFoundException('Regua padrão não encontrada');
+
+    return this.prisma.reguas.create({
+      data: {
+        license_id,
+        name: reguaPadrao.name,
+        active: true,
+        tipo_regua: reguaPadrao.tipo_regua,
+        FasesRegua: {
+          createMany: {
+            data: reguaPadrao.FasesRegua.map((fase) => {
+              return {
+                fase: fase.fase,
+                cron: fase.cron,
+                duracao: fase.duracao,
+                inicio: fase.inicio,
+                active: fase.active,
+                mensagem: fase.mensagem,
+              } as CreateFasesReguaDto;
+            }),
+          },
+        },
+      },
+    });
   }
 
   findAll(where: Prisma.LicensesWhereInput): Promise<Licenses[]> {
@@ -89,5 +123,9 @@ export class LicensesService {
 
   remove(id: number) {
     return this.prisma.licenses.delete({ where: { id } });
+  }
+
+  async haveUsers(license_id: number): Promise<boolean> {
+    return this.prisma.users.findFirst({ where: { license_id } }).then((user) => !!user);
   }
 }

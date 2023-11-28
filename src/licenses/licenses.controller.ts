@@ -36,7 +36,9 @@ export class LicensesController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
+    const haveUsers = await this.licenses.haveUsers(+id);
+    if (haveUsers) throw new UnauthorizedException('Não é possível excluir uma licença com usuários vinculados');
     return this.licenses.remove(+id);
   }
 }

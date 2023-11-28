@@ -1,5 +1,6 @@
+import { Users } from '@prisma/client';
 import { AuthService } from './../auth/auth.service';
-import { Controller, Get, Post, Body, Patch, Param, Delete, Headers } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Headers, Request } from '@nestjs/common';
 import { ReguaService } from './reguas.service';
 import { CreateReguaDto } from './dto/create-regua.dto';
 import { UpdateReguaDto } from './dto/update-regua.dto';
@@ -15,13 +16,13 @@ export class ReguasController {
   }
 
   @Get()
-  findAll() {
-    return this.regua.findAll();
+  findAll(@Request() request: Request & { user: Users }) {
+    return this.regua.findAll(request.user.license_id);
   }
 
   @Get('active')
-  findActive() {
-    return this.regua.findActive();
+  findActive(@Request() request: Request & { user: Users }) {
+    return this.regua.findActive(request.user.license_id);
   }
 
   @Get(':id')
