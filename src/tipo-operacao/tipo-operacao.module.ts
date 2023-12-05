@@ -7,5 +7,6 @@ import { TipoOperacaoController } from './tipo-operacao.controller';
   imports: [PrismaModule],
   controllers: [TipoOperacaoController],
   providers: [TipoOperacaoService],
+  exports: [TipoOperacaoService],
 })
 export class TipoOperacaoModule {}

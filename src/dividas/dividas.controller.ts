@@ -14,21 +14,26 @@ import {
 import { DividasService } from './dividas.service';
 import { CreateDividaDto } from './dto/create-divida.dto';
 import { UpdateDividaDto } from './dto/update-divida.dto';
+import { TipoOperacaoService } from 'src/tipo-operacao/tipo-operacao.service';
 
 @Controller('dividas')
 export class DividasController {
-  constructor(private readonly dividasService: DividasService) {}
+  constructor(private readonly dividasService: DividasService, private tipoOperacao: TipoOperacaoService) {}
 
   @Post()
-  create(@Request() request: Request & { user: Users }, @Body() createDividaDto: CreateDividaDto) {
+  async create(@Request() request: Request & { user: Users }, @Body() createDividaDto: CreateDividaDto) {
     if (createDividaDto.credor_id == createDividaDto.devedor_id) {
       throw new BadRequestException('Credor e devedor não podem ser os mesmos');
     }
 
+    const tiposOperacoes = createDividaDto.TiposOperacoes;
     delete createDividaDto.documento_contratual;
     delete createDividaDto.TiposOperacoes;
 
-    return this.dividasService.create(createDividaDto, request.user.license_id);
+    const newDivida = await this.dividasService.create(createDividaDto, request.user.license_id);
+    if (!newDivida) throw new BadRequestException('Não foi possível criar a dívida');
+    if (tiposOperacoes) return await this.tipoOperacao.create({ ...tiposOperacoes, divida_id: newDivida.id });
+    return newDivida;
   }
 
   @Post('vencimento')

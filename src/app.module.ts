@@ -24,6 +24,8 @@ import { MailModule } from './mail/mail.module';
 import { CredilinkModule } from './credilink/credilink.module';
 import { HttpService } from './http/http.service';
 import { HttpModule } from './http/http.module';
+import { ParcelasOperacaoModule } from './parcelas-operacao/parcelas-operacao.module';
+import { TiposContratoModule } from './tipos-contrato/tipos-contrato.module';
 
 @Module({
   imports: [
@@ -51,6 +53,8 @@ import { HttpModule } from './http/http.module';
     MailModule,
     CredilinkModule,
     HttpModule,
+    ParcelasOperacaoModule,
+    TiposContratoModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService, HttpService],

@@ -2,7 +2,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
 import { CreateDividaDto } from './dto/create-divida.dto';
 import { UpdateDividaDto } from './dto/update-divida.dto';
-import { Prisma, Users } from '@prisma/client';
+import { Indices, Prisma, Users } from '@prisma/client';
 
 @Injectable()
 export class DividasService {
@@ -46,6 +46,16 @@ export class DividasService {
             },
           };
           break;
+        case 'tipo_contrato_id':
+          newDivida = {
+            ...newDivida,
+            TipoContrato: {
+              connect: {
+                id: divida.tipo_contrato_id,
+              },
+            },
+          };
+          break;
         case 'credor_id':
           newDivida = {
             ...newDivida,
@@ -65,8 +75,6 @@ export class DividasService {
               },
             },
           };
-          break;
-        case 'TiposOperacoes':
           break;
         default:
           newDivida = {
@@ -114,8 +122,8 @@ export class DividasService {
     });
   }
 
-  findAll(where: Prisma.DividasWhereInput = {}) {
-    return this.prisma.dividas.findMany({
+  async findAll(where: Prisma.DividasWhereInput = {}) {
+    const dividas = await this.prisma.dividas.findMany({
       where,
       include: {
         Credor: {
@@ -133,10 +141,51 @@ export class DividasService {
             name: true,
           },
         },
+        TiposOperacoes: {
+          include: {
+            Cheque: {
+              include: {
+                ParcelasOperacao: true,
+              },
+            },
+            Duplicata: {
+              include: {
+                ParcelasOperacao: true,
+              },
+            },
+          },
+        },
         StatusFaseDividas: true,
         Indices: true,
+        TipoContrato: true,
       },
     });
+
+    return dividas.map((divida) => {
+      const valor_corrigido = this.valorCorrigido(divida.valor_total_inicial, divida.data_vencimento, divida.Indices);
+      const indices_ids = divida.Indices.map((indice) => indice.id);
+      delete divida.Indices;
+      return {
+        ...divida,
+        valor_corrigido,
+        indices_ids,
+      };
+    });
+  }
+
+  private valorCorrigido(valor_total_inicial: number, vecimento: Date, indices: Indices[]) {
+    if (!valor_total_inicial) return 0;
+
+    const dataAtual = new Date();
+    const dataVencimento = new Date(vecimento);
+
+    const diffVenctoHojeEmDias = Math.ceil((dataAtual.getTime() - dataVencimento.getTime()) / (1000 * 3600 * 24));
+    let valor_corrigido = valor_total_inicial;
+    for (const indice of indices) {
+      valor_corrigido += valor_total_inicial + (indice.valor / 30) * diffVenctoHojeEmDias;
+    }
+
+    return valor_corrigido;
   }
 
   findOne(id: number) {

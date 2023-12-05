@@ -41,29 +41,11 @@ export class TipoOperacaoService {
     if (createTipoOperacaoDto.cheque) {
       const cheque: Prisma.ChequeCreateInput[] = [];
       createTipoOperacaoDto.cheque.forEach((chequeDto: CreateChequeDto) => {
-        const emitente_cheque_id = chequeDto.emitente_cheque_id;
-        const beneficiario_id = chequeDto.beneficiario_id;
-        const parcela_id = chequeDto.parcela_id;
-
-        delete chequeDto.emitente_cheque_id;
-        delete chequeDto.beneficiario_id;
-        delete chequeDto.parcela_id;
-
         cheque.push({
           ...chequeDto,
-          EmitenteCheque: {
-            connect: {
-              id: emitente_cheque_id,
-            },
-          },
-          BeneficiarioCheque: {
-            connect: {
-              id: beneficiario_id,
-            },
-          },
           ParcelasOperacao: {
-            connect: {
-              id: parcela_id,
+            create: {
+              ...chequeDto.ParcelasOperacao,
             },
           },
         });

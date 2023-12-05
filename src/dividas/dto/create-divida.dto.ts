@@ -20,6 +20,10 @@ export class CreateDividaDto {
   tipo_garantia_id?: number;
 
   @IsOptional()
+  @IsNumber()
+  tipo_contrato_id?: number;
+
+  @IsOptional()
   @IsInt()
   modo_constituicao_mora?: number;
 

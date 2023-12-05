@@ -1,4 +1,5 @@
 import { Type } from 'class-transformer';
+import { CreateParcelasOperacaoDto } from './../../parcelas-operacao/dto/create-parcelas-operacao.dto';
 import { IsDateString, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
 
 export class CreateTipoOperacaoDto {
@@ -52,11 +53,11 @@ export class CreateTipoOperacaoDto {
 }
 
 export class CreateChequeDto {
-  @IsNumber()
-  emitente_cheque_id: number;
+  @IsString()
+  emitente_cheque_id: string;
 
-  @IsNumber()
-  beneficiario_id: number;
+  @IsString()
+  beneficiario_id: string;
 
   @IsOptional()
   @IsNumber()
@@ -97,6 +98,11 @@ export class CreateChequeDto {
   @IsOptional()
   @IsNumber()
   conta: number;
+
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => CreateParcelasOperacaoDto)
+  ParcelasOperacao: CreateParcelasOperacaoDto;
 }
 
 export class CreateDuplicataDto {

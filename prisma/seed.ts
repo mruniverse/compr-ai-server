@@ -15,6 +15,7 @@ function seedPermissions() {
       { name: 'Licenças', route: '/auth/licenses' },
       { name: 'Permissões', route: '/auth/roles' },
       { name: 'Indices', route: '/auth/indices' },
+      { name: 'Tipos de Contrato', route: '/auth/tipos-contrato' },
       { name: 'Regua de cobrança', route: '/auth/regua' },
     ],
   });

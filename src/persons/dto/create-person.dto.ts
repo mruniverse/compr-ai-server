@@ -31,6 +31,9 @@ enum Sexo {
 }
 
 export default class CreatePersonDto {
+  @IsOptional()
+  id: number;
+
   @IsInt()
   ramo_id: number;
 
