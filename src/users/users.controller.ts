@@ -1,68 +1,32 @@
-import { UpdateUserDto } from './dto/update-user.dto';
-import { PrismaService } from './../prisma/prisma.service';
-import { Users, Prisma } from '@prisma/client';
+import { Public } from 'src/auth/auth.guard';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UsersService } from './users.service';
-import {
-  Controller,
-  Post,
-  Body,
-  NotFoundException,
-  Get,
-  ConflictException,
-  Param,
-  Patch,
-  Delete,
-  Query,
-  Request,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Controller, Post, Body, NotFoundException, ConflictException, Param, Delete } from '@nestjs/common';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly users: UsersService, private prisma: PrismaService) {}
+  constructor(private readonly users: UsersService) {}
 
+  @Public()
   @Post()
   async create(@Body() user: CreateUserDto) {
-    const license = await this.prisma.licenses.findFirst({ where: { id: user.license_id }, include: { Users: true } });
-    if (!license) throw new NotFoundException('Licença não encontrada');
-
     const existingUser = await this.users.findUniqueByEmail(user.email);
     if (existingUser) throw new ConflictException('Usuário já cadastrado');
 
-    const maxUsers = license.Users?.length >= license.max_users;
-    if (maxUsers) throw new ConflictException('Limite de usuários excedido');
-
-    return await this.users.create(user);
-  }
-
-  @Get()
-  async findAll(@Query('include') include: Array<string>, @Request() request: Request & { user: Users }) {
-    let where: Prisma.UsersWhereInput = {};
     try {
-      where = await this.users.findWhereAllowed(request.user);
+      await this.users.create(user);
     } catch (error) {
-      throw new UnauthorizedException(error.message);
+      throw new Error(error.message);
     }
 
-    return include?.includes('person') ? this.users.findAllWithPerson(where) : this.users.findAll(where);
-  }
-
-  @Patch(':id')
-  async update(@Param('id') id: string, @Body() user: UpdateUserDto, @Request() request: Request & { user: Users }) {
-    if (!this.users.findIfCreateOrUpdateAllowed(user, request.user)) throw new UnauthorizedException('Não autorizado');
-
-    return this.users.update(+id, user);
+    return { message: 'Usuário cadastrado com sucesso' };
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: string, @Request() request: Request & { user: Users }) {
-    if (!this.users.findIfDeleteAllowed(+id, request.user)) throw new UnauthorizedException('Não autorizado');
-    if (request.user.id === +id) throw new UnauthorizedException('Não é possível excluir o próprio usuário');
-
-    const user = await this.users.findUnique({ id: +id });
+  async remove(@Param('id') id: string) {
+    const user = await this.users.findUnique({ id: id });
     if (!user) throw new NotFoundException('Usuário não encontrado');
 
-    return this.users.deleteUser({ id: +id });
+    return this.users.deleteUser({ id: id });
   }
 }
