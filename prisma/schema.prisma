@@ -28,12 +28,21 @@ model Products {
   carts   Carts[]  @relation(fields: [cartIds], references: [id])
 }
 
+type CartItem {
+  name     String
+  price    Float
+  quantity Int
+}
+
 model Carts {
   id        String    @id @default(auto()) @map("_id") @db.ObjectId
   userId    String    @map("user_id")
   closed    Boolean   @default(false)
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
+
+  items CartItem[]
+  total Float      @default(0)
 
   productsIds String[]   @db.ObjectId
   products    Products[] @relation(fields: [productsIds], references: [id])

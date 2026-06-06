@@ -1,0 +1,11 @@
+import { Type } from 'class-transformer';
+import { ArrayNotEmpty, IsArray, ValidateNested } from 'class-validator';
+import { CreateCartItemDto } from './create-cart-item.dto';
+
+export class CreateCartDto {
+  @IsArray()
+  @ArrayNotEmpty()
+  @ValidateNested({ each: true })
+  @Type(() => CreateCartItemDto)
+  items: CreateCartItemDto[];
+}

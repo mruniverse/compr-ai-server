@@ -9,6 +9,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { HttpService } from './http/http.service';
 import { HttpModule } from './http/http.module';
+import { CartsModule } from './carts/carts.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { HttpModule } from './http/http.module';
     UsersModule,
     PrismaModule,
     HttpModule,
+    CartsModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService, HttpService],
