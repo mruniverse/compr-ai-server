@@ -1,12 +1,7 @@
 import { Users } from '@prisma/client';
 import { UsersService } from './../users/users.service';
 import { JwtService } from '@nestjs/jwt';
-import {
-  BadRequestException,
-  ConflictException,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { SignInDto } from './dto/signin.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
@@ -55,10 +50,7 @@ export class AuthService {
     return this.users.findUnique({ id: userId });
   }
 
-  async changePassword(
-    userId: string,
-    dto: ChangePasswordDto,
-  ): Promise<{ message: string }> {
+  async changePassword(userId: string, dto: ChangePasswordDto): Promise<{ message: string }> {
     const user = await this.users.findByIdWithPassword(userId);
     if (!user) {
       throw new UnauthorizedException();

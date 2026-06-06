@@ -1,13 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  NotFoundException,
-  Param,
-  Post,
-  Query,
-  ValidationPipe,
-} from '@nestjs/common';
+import { Body, Controller, Get, NotFoundException, Param, Post, Query, ValidationPipe } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { QueryProductsDto } from './dto/query-products.dto';
@@ -23,6 +14,14 @@ export class ProductsController {
     query: QueryProductsDto,
   ) {
     return this.products.search(query.search, query.limit);
+  }
+
+  // Static route declared before ':id' so 'barcode' is not parsed as an id.
+  @Get('barcode/:code')
+  async findByBarcode(@Param('code') code: string) {
+    const product = await this.products.findByBarcode(code);
+    if (!product) throw new NotFoundException('Produto não encontrado');
+    return product;
   }
 
   @Get(':id')

@@ -1,10 +1,4 @@
-import {
-  BadRequestException,
-  Controller,
-  Get,
-  Param,
-  Query,
-} from '@nestjs/common';
+import { BadRequestException, Controller, Get, Param, Query } from '@nestjs/common';
 import { CurrentUser, JwtUser } from 'src/auth/current-user.decorator';
 import { PricesService } from './prices.service';
 import { PriceHistoryQueryDto } from './dto/price-history-query.dto';
@@ -16,19 +10,11 @@ export class PricesController {
   @Get('history')
   history(@CurrentUser() user: JwtUser, @Query() query: PriceHistoryQueryDto) {
     if (!query.name) throw new BadRequestException('Informe o produto');
-    return this.prices.getHistoryByName(
-      user.id,
-      query.name,
-      query.from,
-      query.to,
-    );
+    return this.prices.getHistoryByName(user.id, query.name, query.from, query.to);
   }
 
   @Get('history/:productId')
-  historyByProduct(
-    @CurrentUser() user: JwtUser,
-    @Param('productId') productId: string,
-  ) {
+  historyByProduct(@CurrentUser() user: JwtUser, @Param('productId') productId: string) {
     return this.prices.getHistoryByProductId(user.id, productId);
   }
 

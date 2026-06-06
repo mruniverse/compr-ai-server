@@ -1,9 +1,4 @@
-import {
-  ForbiddenException,
-  Injectable,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common';
+import { ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { Carts } from '@prisma/client';
 import { PrismaService } from './../prisma/prisma.service';
 import { PricesService } from './../prices/prices.service';
@@ -13,16 +8,10 @@ import { CreateCartItemDto } from './dto/create-cart-item.dto';
 export class CartsService {
   private readonly logger = new Logger(CartsService.name);
 
-  constructor(
-    private prisma: PrismaService,
-    private prices: PricesService,
-  ) {}
+  constructor(private prisma: PrismaService, private prices: PricesService) {}
 
   async create(userId: string, items: CreateCartItemDto[]): Promise<Carts> {
-    const total = items.reduce(
-      (sum, item) => sum + item.price * item.quantity,
-      0,
-    );
+    const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
     const cart = await this.prisma.carts.create({
       data: {
@@ -56,7 +45,7 @@ export class CartsService {
   private async findOwned(userId: string, id: string): Promise<Carts> {
     const cart = await this.prisma.carts.findUnique({ where: { id } });
     if (!cart) throw new NotFoundException('Compra não encontrada');
-    if (cart.userId !== userId) throw new ForbiddenException();
+    if (cart.userId !== userId) throw new ForbiddenException('Acesso negado');
     return cart;
   }
 
@@ -68,16 +57,9 @@ export class CartsService {
     });
   }
 
-  async update(
-    userId: string,
-    id: string,
-    items: CreateCartItemDto[],
-  ): Promise<Carts> {
+  async update(userId: string, id: string, items: CreateCartItemDto[]): Promise<Carts> {
     await this.findOwned(userId, id);
-    const total = items.reduce(
-      (sum, item) => sum + item.price * item.quantity,
-      0,
-    );
+    const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
     return this.prisma.carts.update({
       where: { id },
       data: { total, items: { set: items } },

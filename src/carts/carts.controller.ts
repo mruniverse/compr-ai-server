@@ -25,11 +25,7 @@ export class CartsController {
   }
 
   @Patch(':id')
-  async update(
-    @CurrentUser() user: JwtUser,
-    @Param('id') id: string,
-    @Body() body: CreateCartDto,
-  ) {
+  async update(@CurrentUser() user: JwtUser, @Param('id') id: string, @Body() body: CreateCartDto) {
     const cart = await this.carts.update(user.id, id, body.items);
     return { message: 'Compra atualizada', cart };
   }

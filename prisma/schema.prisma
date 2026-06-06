@@ -20,6 +20,7 @@ model Products {
   id             String    @id @default(auto()) @map("_id") @db.ObjectId
   name           String
   nameKey        String?   @unique @map("name_key")
+  barcode        String?   @unique
   price          Float
   unit           String
   lastPrice      Float?    @map("last_price")
@@ -68,4 +69,55 @@ model Carts {
 
   productsIds String[]   @db.ObjectId
   products    Products[] @relation(fields: [productsIds], references: [id])
+}
+
+type ListItem {
+  name      String
+  price     Float
+  quantity  Int
+  checked   Boolean @default(false)
+  productId String? @map("product_id")
+  nameKey   String? @map("name_key")
+}
+
+model ShoppingList {
+  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String     @map("user_id")
+  name      String
+  icon      String?
+  recurring Boolean    @default(false)
+  archived  Boolean    @default(false)
+  items     ListItem[]
+  createdAt DateTime?  @default(now())
+  updatedAt DateTime?  @updatedAt
+
+  @@index([userId, archived])
+}
+
+model PriceAlert {
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String    @map("user_id")
+  productId       String?   @map("product_id")
+  name            String
+  nameKey         String    @map("name_key")
+  targetPrice     Float?    @map("target_price")
+  direction       String    @default("drop")
+  active          Boolean   @default(true)
+  lastTriggeredAt DateTime? @map("last_triggered_at")
+  createdAt       DateTime? @default(now())
+
+  @@index([userId, nameKey])
+}
+
+model PantryItem {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String    @map("user_id")
+  name      String
+  nameKey   String    @map("name_key")
+  quantity  Int?
+  unit      String?
+  lowStock  Boolean   @default(false) @map("low_stock")
+  updatedAt DateTime? @updatedAt
+
+  @@index([userId, nameKey])
 }

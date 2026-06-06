@@ -20,6 +20,10 @@ export class ProductsService {
     return this.prisma.products.findUnique({ where: { id } });
   }
 
+  async findByBarcode(barcode: string): Promise<Products | null> {
+    return this.prisma.products.findUnique({ where: { barcode } });
+  }
+
   // Upsert by normalized name key so re-adding a product updates price/unit
   // instead of creating a duplicate catalog row.
   async upsert(dto: CreateProductDto): Promise<Products> {

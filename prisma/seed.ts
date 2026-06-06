@@ -11,13 +11,18 @@ function normalizeKey(name: string): string {
     .replace(/\s+/g, ' ');
 }
 
-const products: { name: string; price: number; unit: string }[] = [
-  { name: 'Arroz', price: 24.9, unit: '5kg' },
-  { name: 'Feijão', price: 8.5, unit: '1kg' },
-  { name: 'Açúcar', price: 4.2, unit: '1kg' },
-  { name: 'Café', price: 15.9, unit: '500g' },
-  { name: 'Leite', price: 5.3, unit: '1L' },
-  { name: 'Óleo de Soja', price: 7.8, unit: '900ml' },
+const products: {
+  name: string;
+  price: number;
+  unit: string;
+  barcode?: string;
+}[] = [
+  { name: 'Arroz', price: 24.9, unit: '5kg', barcode: '7891234500017' },
+  { name: 'Feijão', price: 8.5, unit: '1kg', barcode: '7891234500024' },
+  { name: 'Açúcar', price: 4.2, unit: '1kg', barcode: '7891234500031' },
+  { name: 'Café', price: 15.9, unit: '500g', barcode: '7891234500048' },
+  { name: 'Leite', price: 5.3, unit: '1L', barcode: '7891234500055' },
+  { name: 'Óleo de Soja', price: 7.8, unit: '900ml', barcode: '7891234500062' },
   { name: 'Macarrão', price: 4.9, unit: '500g' },
   { name: 'Farinha de Trigo', price: 5.5, unit: '1kg' },
   { name: 'Sal', price: 2.5, unit: '1kg' },
@@ -48,12 +53,13 @@ async function main() {
     const nameKey = normalizeKey(p.name);
     await prisma.products.upsert({
       where: { nameKey },
-      update: { price: p.price, unit: p.unit },
+      update: { price: p.price, unit: p.unit, ...(p.barcode ? { barcode: p.barcode } : {}) },
       create: {
         name: p.name,
         nameKey,
         price: p.price,
         unit: p.unit,
+        ...(p.barcode ? { barcode: p.barcode } : {}),
         lastPrice: p.price,
         lowestPrice: p.price,
         lastRecordedAt: now,

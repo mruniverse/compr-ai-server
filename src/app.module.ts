@@ -12,6 +12,9 @@ import { HttpModule } from './http/http.module';
 import { CartsModule } from './carts/carts.module';
 import { ProductsModule } from './products/products.module';
 import { PricesModule } from './prices/prices.module';
+import { ListsModule } from './lists/lists.module';
+import { AlertsModule } from './alerts/alerts.module';
+import { PantryModule } from './pantry/pantry.module';
 
 @Module({
   imports: [
@@ -27,6 +30,9 @@ import { PricesModule } from './prices/prices.module';
     CartsModule,
     ProductsModule,
     PricesModule,
+    ListsModule,
+    AlertsModule,
+    PantryModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService, HttpService],
