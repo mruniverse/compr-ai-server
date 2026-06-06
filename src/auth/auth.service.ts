@@ -1,8 +1,15 @@
 import { Users } from '@prisma/client';
 import { UsersService } from './../users/users.service';
 import { JwtService } from '@nestjs/jwt';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { SignInDto } from './dto/signin.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -32,5 +39,36 @@ export class AuthService {
     } catch (error) {
       throw new UnauthorizedException();
     }
+  }
+
+  async updateProfile(userId: string, dto: UpdateProfileDto): Promise<Users> {
+    if (!dto.name && !dto.email) {
+      throw new BadRequestException('Nenhum dado para atualizar');
+    }
+    if (dto.email) {
+      const existing = await this.users.findUniqueByEmail(dto.email);
+      if (existing && existing.id !== userId) {
+        throw new ConflictException('Email já cadastrado');
+      }
+    }
+    await this.users.update(userId, dto);
+    return this.users.findUnique({ id: userId });
+  }
+
+  async changePassword(
+    userId: string,
+    dto: ChangePasswordDto,
+  ): Promise<{ message: string }> {
+    const user = await this.users.findByIdWithPassword(userId);
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+    const valid = await bcrypt.compare(dto.currentPassword, user.password);
+    if (!valid) {
+      throw new UnauthorizedException('Senha atual incorreta');
+    }
+    // users.update hashes the password — pass plaintext, do not pre-hash.
+    await this.users.update(userId, { password: dto.newPassword });
+    return { message: 'Senha alterada com sucesso' };
   }
 }

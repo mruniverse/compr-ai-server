@@ -10,6 +10,8 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { HttpService } from './http/http.service';
 import { HttpModule } from './http/http.module';
 import { CartsModule } from './carts/carts.module';
+import { ProductsModule } from './products/products.module';
+import { PricesModule } from './prices/prices.module';
 
 @Module({
   imports: [
@@ -23,6 +25,8 @@ import { CartsModule } from './carts/carts.module';
     PrismaModule,
     HttpModule,
     CartsModule,
+    ProductsModule,
+    PricesModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService, HttpService],
