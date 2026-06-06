@@ -21,7 +21,7 @@ export class ProductsService {
   }
 
   async findByBarcode(barcode: string): Promise<Products | null> {
-    return this.prisma.products.findUnique({ where: { barcode } });
+    return this.prisma.products.findFirst({ where: { barcode } });
   }
 
   // Upsert by normalized name key so re-adding a product updates price/unit
